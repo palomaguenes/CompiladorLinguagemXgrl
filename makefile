@@ -1,10 +1,11 @@
 all: trabalho entrada.xgrl
 	./trabalho < entrada.xgrl
 
-lex.yy.c: trabalho.lex
-	lex trabalho.lex
+lex.yy.c: trabalhoxgrl.lex
+	lex trabalhoxgrl.lex
 
-y.tab.c: trabalho.y
-	yacc trabalho.y
+y.tab.c: trabalhoxgrl.y
+	yacc trabalhoxgrl.y
 
-
+trabalho: lex.yy.c y.tab.c
+	g++ -o trabalhoxgrl y.tab.c -lfl
