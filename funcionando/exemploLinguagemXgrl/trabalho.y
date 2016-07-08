@@ -14,11 +14,11 @@ void yyerror(const char *);
 
 %}
 
-%token _ID _USANDOISSO _PROGRAM _BEGIN _END _WRITELN _WRITE _VAR _IF _THEN _ELSE
-%token _FOR _TO _DO _ATRIB _FUNCTION
-%token _INTEGER _STRING
+%token _ID _TUDAO _USANDOISSO _PROGRAM _EXECUTEISSO _END _VAR _IF _THEN _ELSE
+%token _MOSTRE _FOR _TO _DO _ATRIB _FUNCTION 
+%token _NUMEROSEMPONTO _PALAVRA _NUMEROCOMPONTO
 
-%token _CTE_STRING _CTE_INTEGER
+%token _CTE_PALAVRA _CTE_NUMEROSEMPONTO _CTE_NUMEROCOMPONTO
 
 %nonassoc '>' '<' '='
 %left '+' '-'
@@ -28,20 +28,61 @@ void yyerror(const char *);
 
 %%
 
-S : MIOLOS { cout << "Aceito" << endl; }
+S : TUDAO { cout << "Aceito" << endl; }
   ;
     
-   
-MIOLOS : MIOLO MIOLOS
-       | 
+TUDAO  : _TUDAO '{' USANDOISSO EXECUTEISSO'}'
+       ;
+
+USANDOISSO  : _USANDOISSO '{' DECLS '}'
+	    |
+	    ;
+     
+EXECUTEISSO : _EXECUTEISSO '{' MIOLOS '}'
+	    |
+	    ;
+
+DECLS : DECL ';' DECLS
+      | DECL ';'
+      ;
+     
+DECL : IDS ':' TIPO        
+     ;      
+
+IDS : _ID '&' IDS
+    | _ID
+    ; 
+
+TIPO : _NUMEROSEMPONTO
+     | _NUMEROCOMPONTO
+     | _PALAVRA TAM_PALAVRA 
+     ;
+
+TAM_PALAVRA: '[' _CTE_NUMEROSEMPONTO ']'
+           |
+           ; 
+
+  
+MIOLOS : MIOLO
+       | MIOLO MIOLOS
        ;
        
-MIOLO : VARGLOBAL
-      | FUNCTION
+MIOLO : FUNCTION
+      | CMDS
+      |
       ;    
       
-VARGLOBAL : _USANDOISSO '{' 
-     ;      
+CMDS : CMD ';' CMDS
+     |
+     ;                   
+
+CMD : MOSTRE
+    |
+    ; 
+
+MOSTRE: _MOSTRE E 
+      ; 
+
    
 FUNCTION : _FUNCTION _ID '(' PARAMETROS ')' ':' TIPO ';' BLOCO ';'
          | _FUNCTION _ID ':' TIPO ';' BLOCO ';'
@@ -53,38 +94,17 @@ PARAMETROS : DECL ';' PARAMETROS
    
 VARS : _VAR DECLS
      ;
-     
-DECLS : DECL ';' DECLS
-      | DECL ';'
-      ;   
-     
-DECL : IDS ':' TIPO        
-     ;
-     
-TIPO : _INTEGER
-     | _STRING TAM_STRING 
-     ;
-     
-TAM_STRING : '[' _CTE_INTEGER ']'
-           |
-           ;     
-     
-IDS : _ID ',' IDS
-    | _ID
-    ;      
-   
+
           
-CMDS : CMD ';' CMDS
-     | 
-     ;                   
- 
-CMD : SAIDA
+
+
+CMD2 : 
     | CMD_IF
     | CMD_FOR
     | BLOCO
     | CMD_ATRIB
     ;
-    
+
 CMD_ATRIB : _ID INDICE _ATRIB E
           ;    
           
@@ -99,24 +119,21 @@ EXPS : E ',' EXPS
 CMD_FOR : _FOR _ID _ATRIB E _TO E _DO CMD
         ;
     
-BLOCO : _BEGIN CMDS _END
+BLOCO : _EXECUTEISSO CMDS _END
       ;    
     
 CMD_IF : _IF E _THEN CMD
        | _IF E _THEN CMD _ELSE CMD
        ;    
-    
-SAIDA : _WRITE '(' E ')'
-      | _WRITELN '(' E ')'
-      ;
-   
+
 E : E '+' E
   | E '>' E
   | F
   ;
   
-F : _CTE_STRING
-  | _CTE_INTEGER
+F : _CTE_PALAVRA
+  | _CTE_NUMEROSEMPONTO
+  | _CTE_NUMEROCOMPONTO
   | _ID
   ;     
  

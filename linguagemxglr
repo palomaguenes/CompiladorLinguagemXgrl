@@ -1,42 +1,51 @@
-usandoisso{
-	a & b & c: palavras;
-	m & n: numerosemponto;
-	x & l: numerocomponto;
+TUDAO{
+	
+
+	usandoisso{
+		a & b & c: palavras;
+		m & n: numerosemponto;
+		x & l: numerocomponto;
+	}
+
+	FUNCAO(){
+		USANDOISSO{}
+		EXECUTEISSO{}
+	}
+
+	executeisso{
+
+		enquanto  'n<9' adicione/subtraia/etc '2' em 'm' {  (for)
+			...
+		}
+		repita se ( n < 11){ (while)
+			  ...
+		}
+		execute{ (do while)
+			...
+		}
+		repita se()
+
+
+		escolha: (switch)
+
+			1: ...
+			2: ...
+			n: ...
+			nenhumadasanteriores: ...
+	
+		se (expressão) eh verdade:(if)
+			...
+		ehmentira:(else)
+			...
+	
+
+		mostre 'string aqui!'; (print)
+
+
+		x vale x+5 (x = x+5)
+	
+	
+	}
+	
+
 }
-
-executeisso{
-
-	enquanto  'n<9' adicione/subtraia/etc '2' em 'm' {  (for)
-		...
-	}
-	repita se ( n < 11){ (while)
-		  ...
-	}
-	execute{ (do while)
-		...
-	}
-	repita se()
-
-
-	escolha: (switch)
-
-		1: ...
-		2: ...
-		n: ...
-		nenhumadasanteriores: ...
-	
-	se (expressão) eh verdade:(if)
-		...
-	ehmentira:(else)
-		...
-	
-
-	mostre 'string aqui!'; (print)
-
-
-	x vale x+5 (x = x+5)
-	
-	
-}
-
-feito.
