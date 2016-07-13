@@ -6,6 +6,18 @@ TUDAO{
 	}
 
 	executeisso {
-		mostre 'oi';
+
+		Mostre 'monkeys';
+		
+		se (m > n) ehverdade{
+			mostre 'oi';
+		}
+
+		se (m > n) ehverdade{
+			mostre 'hello';
+		}ehmentira{
+			mostre 'ola';
+		}
+
 	}
 }

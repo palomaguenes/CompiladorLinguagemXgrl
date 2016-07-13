@@ -14,7 +14,7 @@ void yyerror(const char *);
 
 %}
 
-%token _ID _TUDAO _USANDOISSO _PROGRAM _EXECUTEISSO _END _VAR _IF _THEN _ELSE
+%token _ID _TUDAO _USANDOISSO _PROGRAM _EXECUTEISSO _END _VAR _SE _EHVERDADE _EHMENTIRA
 %token _MOSTRE _FOR _TO _DO _ATRIB _FUNCTION 
 %token _NUMEROSEMPONTO _PALAVRA _NUMEROCOMPONTO
 
@@ -63,24 +63,19 @@ TAM_PALAVRA: '[' _CTE_NUMEROSEMPONTO ']'
            ; 
 
   
-MIOLOS : MIOLO
-       | MIOLO MIOLOS
+MIOLOS : MIOLO MIOLOS
+       | 
        ;
        
 MIOLO : FUNCTION
-      | CMDS
-      |
-      ;    
-      
-CMDS : CMD ';' CMDS
-     |
-     ;                   
+      | CMD
+      ;                   
 
 CMD : MOSTRE
-    |
+    | CMD_SE
     ; 
 
-MOSTRE: _MOSTRE E 
+MOSTRE: _MOSTRE E ';'
       ; 
 
    
@@ -95,11 +90,8 @@ PARAMETROS : DECL ';' PARAMETROS
 VARS : _VAR DECLS
      ;
 
-          
-
 
 CMD2 : 
-    | CMD_IF
     | CMD_FOR
     | BLOCO
     | CMD_ATRIB
@@ -119,12 +111,13 @@ EXPS : E ',' EXPS
 CMD_FOR : _FOR _ID _ATRIB E _TO E _DO CMD
         ;
     
-BLOCO : _EXECUTEISSO CMDS _END
-      ;    
-    
-CMD_IF : _IF E _THEN CMD
-       | _IF E _THEN CMD _ELSE CMD
-       ;    
+BLOCO : _EXECUTEISSO CMD _END
+      ;
+
+CMD_SE : _SE '(' E ')' _EHVERDADE '{' CMD '}'
+	   | _SE '(' E ')' _EHVERDADE '{' CMD '}' _EHMENTIRA '{' CMD '}'
+	   ;
+
 
 E : E '+' E
   | E '>' E
