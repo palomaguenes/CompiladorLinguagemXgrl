@@ -18,6 +18,7 @@ COM			[Cc][Oo][Mm]
 FACA		[Ff][Aa][Cc][Aa]
 ENQUANTO	[Ee][Nn][Qq][Uu][Aa][Nn][Tt][Oo]
 REPITA		[Rr][Ee][Pp][Ii][Tt][Aa]
+EXECUTE		[Ee][Xx][Ee][Cc][Uu][Tt][Ee]
 FUNCTION	[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 
 VALE	[Vv][Aa][Ll][Ee]
@@ -46,6 +47,7 @@ CTE_NUMEROCOMPONTO {REAL}
 {FACA} 		{ yylval = yytext; return _FACA; }
 {ENQUANTO} 	{ yylval = yytext; return _ENQUANTO; }
 {REPITA}	{ yylval = yytext; return _REPITA; }
+{EXECUTE}   { yylval = yytext; return _EXECUTE; }
 {FUNCTION}  { yylval = yytext; return _FUNCTION; }
 
 {CTE_SIMBOLO} 			{ yylval = yytext; return _CTE_SIMBOLO; }

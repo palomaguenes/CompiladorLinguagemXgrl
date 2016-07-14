@@ -15,7 +15,7 @@ void yyerror(const char *);
 %}
 
 %token _ID _TUDAO _USANDOISSO _EXECUTEISSO _SE _EHVERDADE _EHMENTIRA 
-%token _MOSTRE _ATRIB _FUNCTION _COM _FACA _ENQUANTO _REPITA
+%token _MOSTRE _ATRIB _FUNCTION _COM _FACA _ENQUANTO _REPITA _EXECUTE 
 %token _NUMEROSEMPONTO _PALAVRA _NUMEROCOMPONTO _SIMBOLO
 
 %token _CTE_PALAVRA _CTE_NUMEROSEMPONTO _CTE_NUMEROCOMPONTO _CTE_SIMBOLO
@@ -76,6 +76,7 @@ CMD : MOSTRE
 	| CMD_ATRIB
 	| CMD_FOR
 	| CMD_WHILE
+	| CMD_DOWHILE
     ; 
 
 MOSTRE: _MOSTRE E ';'
@@ -90,8 +91,11 @@ PARAMETROS : DECL ';' PARAMETROS
            | DECL
            ;
 
-CMD_ATRIB : _ID INDICE _ATRIB E
-          ;    
+CMD_ATRIB : _ID INDICE _ATRIB E ';'
+          ;
+
+CMD_ATRIB_SPV : _ID INDICE _ATRIB E
+				 ;
           
 INDICE : '[' EXPS ']' INDICE
        |
@@ -108,12 +112,14 @@ CMD_SE : _SE '(' E ')' _EHVERDADE '{' CMD '}'
 	   | _SE '(' E ')' _EHVERDADE '{' CMD '}' _EHMENTIRA '{' CMD '}'
 	   ;
 
-CMD_FOR : _COM '(' CMD_ATRIB ')' _FACA '(' CMD_ATRIB ')' _ENQUANTO '(' E ')' '{' CMD '}'
+CMD_FOR : _COM '(' CMD_ATRIB_SPV ')' _FACA '(' CMD_ATRIB_SPV ')' _ENQUANTO '(' E ')' '{' CMD '}'
         ;
 
 CMD_WHILE : _REPITA _SE '(' E ')' '{' CMD '}'
-		  |	_REPITA _SE '(' E ')' '{' '}'
 		  ;
+
+CMD_DOWHILE : _EXECUTE '{' CMD '}' _REPITA _SE '(' E ')' ';'
+			;
 
 E : E '+' E
   | E '>' E
