@@ -23,6 +23,8 @@ FUNCTION	[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 
 VALE	[Vv][Aa][Ll][Ee]
 
+RESTO [Rr][Ee][Ss][Tt][Oo]
+
 CTE_SIMBOLO "'"([^'\n]|"''")"'"
 CTE_PALAVRA	"'"([^'\n]|"''")*"'"
 CTE_NUMEROSEMPONTO {DIGITO}+
@@ -56,6 +58,8 @@ CTE_NUMEROCOMPONTO {REAL}
 {CTE_NUMEROCOMPONTO} 	{ yylval = yytext; return _CTE_NUMEROCOMPONTO; }
 
 {VALE}			{ yylval = yytext; return _ATRIB; }
+
+{RESTO}			{ yylval = yytext; return _RESTO; }
 
 {ID}  { yylval = yytext; return _ID; }
 

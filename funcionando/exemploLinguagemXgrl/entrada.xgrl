@@ -9,7 +9,7 @@ TUDAO{
 
 		Mostre 'monkeys';
 		
-		se (m > n) ehverdade{
+		se (m = n) ehverdade{
 			mostre 'oi';
 		}
 
@@ -19,15 +19,17 @@ TUDAO{
 			mostre 'ola';
 		}
 
-		a vale 'compiladores'
+		a vale 'compiladores';
 
-		com (y vale 5) faca (m vale m+1) enquanto (m > 5){
+		com (y vale 5) faca (m vale m+n-1) enquanto (m > 5){
 			Mostre 'monkeys';
 		}
 
-		repita se (4>5){
-			
+		repita se (4<5){
+			mostre 'bananas';
 		}
+
+	 	l vale resto(6/5);
 
 	}
 }

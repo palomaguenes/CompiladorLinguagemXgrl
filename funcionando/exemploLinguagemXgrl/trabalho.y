@@ -20,7 +20,10 @@ void yyerror(const char *);
 
 %token _CTE_PALAVRA _CTE_NUMEROSEMPONTO _CTE_NUMEROCOMPONTO _CTE_SIMBOLO
 
-%nonassoc '>' '<' '='
+%token _RESTO
+
+%nonassoc '>' '<' '=' ">=" "<="
+%left _RESTO
 %left '+' '-'
 %left '*' '/'
 
@@ -122,7 +125,15 @@ CMD_DOWHILE : _EXECUTE '{' CMD '}' _REPITA _SE '(' E ')' ';'
 			;
 
 E : E '+' E
+  | E '-' E
+  | E '*' E
+  | E '/' E
   | E '>' E
+  | E '<' E
+  | E "<=" E
+  | E ">=" E
+  | _RESTO '(' E '/' E ')' 
+  | E '=' E 
   | F
   ;
   
