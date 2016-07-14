@@ -57,10 +57,6 @@ CTE_NUMEROCOMPONTO {REAL}
 {EXECUTE}   { yylval = yytext; return _EXECUTE; }
 {FUNCTION}  { yylval = yytext; return _FUNCTION; }
 
-{ESCOLHA}  { yylval = yytext; return _ESCOLHA; }
-{SEFOR}  { yylval = yytext; return _SEFOR; }
-{OK}  { yylval = yytext; return _OK; }
-{CASOCONTRARIO}  { yylval = yytext; return _CASOCONTRARIO; }
 
 {CTE_SIMBOLO} 			{ yylval = yytext; return _CTE_SIMBOLO; }
 {CTE_PALAVRA} 			{ yylval = yytext; return _CTE_PALAVRA; }

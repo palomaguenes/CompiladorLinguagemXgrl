@@ -31,9 +31,7 @@ TUDAO{
 
 	 	l vale resto(6/5);
 		
-		n vale 1;
-		
-		escolha n {
+		escolha l {
 			sefor 1 : 
 				mostre 'ola'; 
 				ok
