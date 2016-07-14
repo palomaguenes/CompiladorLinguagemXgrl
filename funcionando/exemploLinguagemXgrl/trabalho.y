@@ -14,8 +14,8 @@ void yyerror(const char *);
 
 %}
 
-%token _ID _TUDAO _USANDOISSO _PROGRAM _EXECUTEISSO _END _VAR _SE _EHVERDADE _EHMENTIRA
-%token _MOSTRE _FOR _TO _DO _ATRIB _FUNCTION 
+%token _ID _TUDAO _USANDOISSO _EXECUTEISSO _SE _EHVERDADE _EHMENTIRA 
+%token _MOSTRE _ATRIB _FUNCTION _COM _FACA _ENQUANTO _REPITA
 %token _NUMEROSEMPONTO _PALAVRA _NUMEROCOMPONTO
 
 %token _CTE_PALAVRA _CTE_NUMEROSEMPONTO _CTE_NUMEROCOMPONTO
@@ -74,6 +74,8 @@ MIOLO : FUNCTION
 CMD : MOSTRE
     | CMD_SE
 	| CMD_ATRIB
+	| CMD_FOR
+	| CMD_WHILE
     ; 
 
 MOSTRE: _MOSTRE E ';'
@@ -86,10 +88,7 @@ FUNCTION : _FUNCTION _ID '(' PARAMETROS ')' ':' TIPO ';' BLOCO ';'
          
 PARAMETROS : DECL ';' PARAMETROS
            | DECL
-           ;         
-   
-VARS : _VAR DECLS
-     ;
+           ;
 
 CMD_ATRIB : _ID INDICE _ATRIB E
           ;    
@@ -100,18 +99,21 @@ INDICE : '[' EXPS ']' INDICE
        
 EXPS : E ',' EXPS
      | E
-     ;        
+     ;
     
-CMD_FOR : _FOR _ID _ATRIB E _TO E _DO CMD
-        ;
-    
-BLOCO : _EXECUTEISSO CMD _END
+BLOCO : _EXECUTEISSO '{' CMD '}'
       ;
 
 CMD_SE : _SE '(' E ')' _EHVERDADE '{' CMD '}'
 	   | _SE '(' E ')' _EHVERDADE '{' CMD '}' _EHMENTIRA '{' CMD '}'
 	   ;
 
+CMD_FOR : _COM '(' CMD_ATRIB ')' _FACA '(' CMD_ATRIB ')' _ENQUANTO '(' E ')' '{' CMD '}'
+        ;
+
+CMD_WHILE : _REPITA _SE '(' E ')' '{' CMD '}'
+		  |	_REPITA _SE '(' E ')' '{' '}'
+		  ;
 
 E : E '+' E
   | E '>' E
@@ -122,7 +124,7 @@ F : _CTE_PALAVRA
   | _CTE_NUMEROSEMPONTO
   | _CTE_NUMEROCOMPONTO
   | _ID
-  ;     
+  ;
  
 %%
 

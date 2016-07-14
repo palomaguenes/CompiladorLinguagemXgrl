@@ -21,5 +21,13 @@ TUDAO{
 
 		a vale 'compiladores'
 
+		com (y vale 5) faca (m vale m+1) enquanto (m > 5){
+			Mostre 'monkeys';
+		}
+
+		repita se (4>5){
+			
+		}
+
 	}
 }
