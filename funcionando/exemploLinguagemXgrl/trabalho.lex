@@ -8,6 +8,7 @@ USANDOISSO 	[Uu][Ss][Aa][Nn][Dd][Oo][[Ii][Ss][Ss][Oo]
 PALAVRA		[Pp][Aa][Ll][Aa][Vv][Rr][Aa]
 NUMEROSEMPONTO	[Nn][Uu][Mm][Ee][Rr][Oo][Ss][Ee][Mm][Pp][Oo][Nn][Tt][Oo]
 NUMEROCOMPONTO	[Nn][Uu][Mm][Ee][Rr][Oo][Cc][Oo][Mm][Pp][Oo][Nn][Tt][Oo]
+SIMBOLO		[Ss][Ii][Mm][Bb][Oo][Ll][Oo]
 EXECUTEISSO	[Ee][Xx][Ee][Cc][Uu][Tt][Ee][Ii][Ss][Ss][Oo]
 
 PROGRAM 	[Pp][Rr][Oo][Gg][Rr][Aa][Mm]
@@ -21,6 +22,8 @@ FOR			[Ff][Oo][Rr]
 TO			[Tt][Oo]
 DO			[Dd][Oo]
 FUNCTION	[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
+
+VALE	[Vv][Aa][Ll][Ee]
 
 CTE_PALAVRA	"'"([^'\n]|"''")*"'"
 CTE_NUMEROSEMPONTO {DIGITO}+
@@ -49,11 +52,11 @@ CTE_NUMEROCOMPONTO {REAL}
 {DO} 		{ yylval = yytext; return _DO; }
 {FUNCTION}  { yylval = yytext; return _FUNCTION; }
 
-{CTE_PALAVRA} 		{ yylval = yytext; return _CTE_PALAVRA; }
+{CTE_PALAVRA} 			{ yylval = yytext; return _CTE_PALAVRA; }
 {CTE_NUMEROSEMPONTO} 	{ yylval = yytext; return _CTE_NUMEROSEMPONTO; }
 {CTE_NUMEROCOMPONTO} 	{ yylval = yytext; return _CTE_NUMEROCOMPONTO; }
 
-":="			{ yylval = yytext; return _ATRIB; }
+{VALE}			{ yylval = yytext; return _ATRIB; }
 
 {ID}  { yylval = yytext; return _ID; }
 

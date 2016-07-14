@@ -19,5 +19,7 @@ TUDAO{
 			mostre 'ola';
 		}
 
+		a vale 'compiladores'
+
 	}
 }

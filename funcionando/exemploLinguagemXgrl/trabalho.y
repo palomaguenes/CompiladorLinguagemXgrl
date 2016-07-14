@@ -73,6 +73,7 @@ MIOLO : FUNCTION
 
 CMD : MOSTRE
     | CMD_SE
+	| CMD_ATRIB
     ; 
 
 MOSTRE: _MOSTRE E ';'
@@ -89,13 +90,6 @@ PARAMETROS : DECL ';' PARAMETROS
    
 VARS : _VAR DECLS
      ;
-
-
-CMD2 : 
-    | CMD_FOR
-    | BLOCO
-    | CMD_ATRIB
-    ;
 
 CMD_ATRIB : _ID INDICE _ATRIB E
           ;    
