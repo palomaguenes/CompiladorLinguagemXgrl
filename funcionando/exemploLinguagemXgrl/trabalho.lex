@@ -22,6 +22,7 @@ FUNCTION	[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 
 VALE	[Vv][Aa][Ll][Ee]
 
+CTE_SIMBOLO "'"([^'\n]|"''")"'"
 CTE_PALAVRA	"'"([^'\n]|"''")*"'"
 CTE_NUMEROSEMPONTO {DIGITO}+
 CTE_NUMEROCOMPONTO {REAL}
@@ -47,6 +48,7 @@ CTE_NUMEROCOMPONTO {REAL}
 {REPITA}	{ yylval = yytext; return _REPITA; }
 {FUNCTION}  { yylval = yytext; return _FUNCTION; }
 
+{CTE_SIMBOLO} 			{ yylval = yytext; return _CTE_SIMBOLO; }
 {CTE_PALAVRA} 			{ yylval = yytext; return _CTE_PALAVRA; }
 {CTE_NUMEROSEMPONTO} 	{ yylval = yytext; return _CTE_NUMEROSEMPONTO; }
 {CTE_NUMEROCOMPONTO} 	{ yylval = yytext; return _CTE_NUMEROCOMPONTO; }
