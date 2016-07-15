@@ -90,8 +90,15 @@ MIOLO : CHAMADAFUNCAO
       | CMD
       ;              
 
-CHAMADAFUNCAO: _ID '(' PARAMETROS ')' ';'
+CHAMADAFUNCAO: _ID '(' PARAM_CHAMADA ')' ';'
 	     ;     
+
+PARAM_CHAMADA: FS
+	     ;
+
+FS: F FS
+  |
+  ;
 
 CMD : MOSTRE
     | CMD_SE
