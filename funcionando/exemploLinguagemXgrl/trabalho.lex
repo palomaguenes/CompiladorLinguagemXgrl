@@ -6,6 +6,7 @@ REAL ({DIGITO}+[.]{DIGITO}*)|({DIGITO}*[.]{DIGITO}+)
 
 USANDOISSO 		[Uu][Ss][Aa][Nn][Dd][Oo][[Ii][Ss][Ss][Oo]
 PALAVRA			[Pp][Aa][Ll][Aa][Vv][Rr][Aa]
+SIMBOLO			[Ss][Ii][Mm][Bb][Oo][Ll][Oo]
 NUMEROSEMPONTO	[Nn][Uu][Mm][Ee][Rr][Oo][Ss][Ee][Mm][Pp][Oo][Nn][Tt][Oo]
 NUMEROCOMPONTO	[Nn][Uu][Mm][Ee][Rr][Oo][Cc][Oo][Mm][Pp][Oo][Nn][Tt][Oo]
 EXECUTEISSO		[Ee][Xx][Ee][Cc][Uu][Tt][Ee][Ii][Ss][Ss][Oo]
@@ -26,6 +27,11 @@ SEFOR		[Ss][Ee][Ff][Oo][Rr]
 OK		[Oo][Kk]
 CASOCONTRARIO	[Cc][Aa][Ss][Oo][Cc][Oo][Nn][Tt][Rr][Aa][Rr][Ii][Oo]
 
+FUNCAO	[Ff][Uu][Nn][Cc][Aa][Oo]
+RECEBE	[Rr][Ee][Cc][Ee][Bb][Ee]
+RETORNA	[Rr][Ee][Tt][Oo][Rr][Nn][Aa]
+NADA	[Nn][Aa][Dd][Aa]
+
 VALE	[Vv][Aa][Ll][Ee]
 
 RESTO [Rr][Ee][Ss][Tt][Oo]
@@ -44,6 +50,7 @@ CTE_NUMEROCOMPONTO {REAL}
 {PALAVRA} 			{ yylval = yytext; return _PALAVRA; }
 {NUMEROSEMPONTO} 	{ yylval = yytext; return _NUMEROSEMPONTO; }
 {NUMEROCOMPONTO} 	{ yylval = yytext; return _NUMEROCOMPONTO; }
+{SIMBOLO}			{ yylval = yytext; return _SIMBOLO; }
 {EXECUTEISSO} 		{ yylval = yytext; return _EXECUTEISSO; }
 
 {MOSTRE} 	{ yylval = yytext; return _MOSTRE; }
@@ -61,6 +68,11 @@ CTE_NUMEROCOMPONTO {REAL}
 {SEFOR}  { yylval = yytext; return _SEFOR; }
 {OK}  { yylval = yytext; return _OK; }
 {CASOCONTRARIO}  { yylval = yytext; return _CASOCONTRARIO; }
+
+{FUNCAO}	{ yylval = yytext; return _FUNCAO; }
+{RECEBE}	{ yylval = yytext; return _RECEBE; }
+{RETORNA}	{ yylval = yytext; return _RETORNA; }
+{NADA}		{ yylval = yytext; return _NADA; }
 
 {CTE_SIMBOLO} 			{ yylval = yytext; return _CTE_SIMBOLO; }
 {CTE_PALAVRA} 			{ yylval = yytext; return _CTE_PALAVRA; }

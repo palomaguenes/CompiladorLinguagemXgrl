@@ -18,6 +18,7 @@ void yyerror(const char *);
 %token _MOSTRE _ATRIB _FUNCTION _COM _FACA _ENQUANTO _REPITA _EXECUTE 
 %token _NUMEROSEMPONTO _PALAVRA _NUMEROCOMPONTO _SIMBOLO
 %token _ESCOLHA _SEFOR _OK _CASOCONTRARIO
+%token _FUNCAO _RECEBE _RETORNA _NADA
 
 %token _CTE_PALAVRA _CTE_NUMEROSEMPONTO _CTE_NUMEROCOMPONTO _CTE_SIMBOLO
 
@@ -35,12 +36,25 @@ void yyerror(const char *);
 S : TUDAO { cout << "Aceito" << endl; }
   ;
     
-TUDAO  : _TUDAO '{' USANDOISSO EXECUTEISSO'}'
+TUDAO  : _TUDAO '{' USANDOISSO FUNCTIONDECLS EXECUTEISSO'}'
        ;
 
 USANDOISSO  : _USANDOISSO '{' DECLS '}'
 	    |
 	    ;
+
+FUNCTIONDECLS : FUNCTIONDECL FUNCTIONDECLS
+			  |
+			  ;
+
+FUNCTIONDECL : _FUNCAO _ID _RECEBE '(' PARAMETROS ')' _RETORNA '('_ID ':' TIPO ')' '{' USANDOISSO EXECUTEISSO'}'
+			 | _FUNCAO _ID _RECEBE '(' PARAMETROS ')' '{' USANDOISSO EXECUTEISSO'}'
+			 ;
+
+PARAMETROS : DECL ',' PARAMETROS
+		   | DECL
+		   | 
+           ;
      
 EXECUTEISSO : _EXECUTEISSO '{' MIOLOS '}'
 	    |
@@ -59,7 +73,8 @@ IDS : _ID '&' IDS
 
 TIPO : _NUMEROSEMPONTO
      | _NUMEROCOMPONTO
-     | _PALAVRA TAM_PALAVRA 
+     | _PALAVRA TAM_PALAVRA
+	 | _SIMBOLO
      ;
 
 TAM_PALAVRA: '[' _CTE_NUMEROSEMPONTO ']'
@@ -85,20 +100,20 @@ CMD : MOSTRE
     ; 
 
 CMD_ESCOLHA : _ESCOLHA F '{' ESCOLHAS '}'
-	;
+			;
 
 ESCOLHAS : CASOS CASOCONTRARIO
-	;
+		 ;
 
 CASOS : CASO CASOS
-	| 
-	;
+	  | 
+	  ;
 
 CASO : _SEFOR F ':' MIOLOS _OK
-     ;
+	 ;
 
 CASOCONTRARIO : _CASOCONTRARIO ':' MIOLOS
-	      ;
+			  ;
 
 MOSTRE: _MOSTRE E ';'
       ; 
@@ -108,9 +123,6 @@ FUNCTION : _FUNCTION _ID '(' PARAMETROS ')' ':' TIPO ';' BLOCO ';'
          | _FUNCTION _ID ':' TIPO ';' BLOCO ';'
          ;    
          
-PARAMETROS : DECL ';' PARAMETROS
-           | DECL
-           ;
 
 CMD_ATRIB : _ID INDICE _ATRIB E ';'
           ;
