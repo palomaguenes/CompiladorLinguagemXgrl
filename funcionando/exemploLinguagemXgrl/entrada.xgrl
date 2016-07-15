@@ -61,5 +61,8 @@ TUDAO{
 				
 		}
 
+		nomedafuncao();
+		c = nomedafuncao('palavra', 'a', 1.1);
+
 	}
 }

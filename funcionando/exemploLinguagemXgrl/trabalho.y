@@ -15,7 +15,7 @@ void yyerror(const char *);
 %}
 
 %token _ID _TUDAO _USANDOISSO _EXECUTEISSO _SE _EHVERDADE _EHMENTIRA 
-%token _MOSTRE _ATRIB _FUNCTION _COM _FACA _ENQUANTO _REPITA _EXECUTE 
+%token _MOSTRE _ATRIB _COM _FACA _ENQUANTO _REPITA _EXECUTE 
 %token _NUMEROSEMPONTO _PALAVRA _NUMEROCOMPONTO _SIMBOLO
 %token _ESCOLHA _SEFOR _OK _CASOCONTRARIO
 %token _FUNCAO _RECEBE _RETORNA _NADA
@@ -86,9 +86,12 @@ MIOLOS : MIOLO MIOLOS
        | 
        ;
        
-MIOLO : FUNCTION
+MIOLO : CHAMADAFUNCAO
       | CMD
-      ;                   
+      ;              
+
+CHAMADAFUNCAO: _ID '(' PARAMETROS ')' ';'
+	     ;     
 
 CMD : MOSTRE
     | CMD_SE
@@ -118,13 +121,8 @@ CASOCONTRARIO : _CASOCONTRARIO ':' MIOLOS
 MOSTRE: _MOSTRE E ';'
       ; 
 
-   
-FUNCTION : _FUNCTION _ID '(' PARAMETROS ')' ':' TIPO ';' BLOCO ';'
-         | _FUNCTION _ID ':' TIPO ';' BLOCO ';'
-         ;    
-         
-
 CMD_ATRIB : _ID INDICE _ATRIB E ';'
+	  | _ID INDICE _ATRIB CHAMADAFUNCAO ';'
           ;
 
 CMD_ATRIB_SPV : _ID INDICE _ATRIB E

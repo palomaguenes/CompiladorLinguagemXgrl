@@ -5,6 +5,23 @@ TUDAO{
 		x & l: numerocomponto;
 	}
 
+	funcao nomedafuncao recebe(k: palavra, k: simbolo, p: numerocomponto) retorna (b:palavra){
+
+	}
+	
+	funcao nomedafuncao recebe(){
+
+		usandoisso{
+			a: palavra;
+		}
+	
+		executeisso {
+			a vale 'funcao otima';
+			mostre a;
+		}
+
+	}	
+
 	executeisso {
 
 		Mostre 'monkeys';
@@ -31,13 +48,20 @@ TUDAO{
 
 	 	l vale resto(6/5);
 		
-		escolha l {
+		n vale 1;
+		
+		escolha n {
 			sefor 1 : 
 				mostre 'ola'; 
 				ok
+			sefor 2:
+				mostre 'hu';
+				ok
 			casocontrario:
-				mostre 'tchau';
+				
 		}
+
+		nomedafuncao();
 
 	}
 }
