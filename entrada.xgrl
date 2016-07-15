@@ -1,0 +1,70 @@
+TUDAO{
+	usandoisso{
+		a & b & c: palavra;
+		m & n: numerosemponto;
+		x & l: numerocomponto;
+		d : numerograndecomponto;
+	}
+
+	funcao nomedafuncao recebe(k: palavra, k: simbolo, p: numerocomponto) retorna (b:palavra){
+
+	}
+	
+	funcao nomedafuncao recebe(){
+
+		usandoisso{
+			a: palavra;
+		}
+	
+		executeisso {
+			a vale 'funcao otima';
+			mostre a;
+		}
+
+	}	
+
+	executeisso {
+
+		Mostre 'monkeys';
+		
+		se (m = n) ehverdade{
+			mostre 'oi';
+		}
+
+		se (m > n) ehverdade{
+			mostre 'hello';
+		}ehmentira{
+			mostre 'ola';
+		}
+
+		a vale 'compiladores';
+
+		com (y vale 5) faca (m vale m+n-1) enquanto (m > 5){
+			Mostre 'monkeys';
+		}
+
+		repita se (4<5){
+			mostre 'bananas';
+		}
+
+	 	l vale resto(6/5);
+		
+		n vale 1;
+		
+		escolha n {
+			sefor 1 : 
+				mostre 'ola'; 
+				ok
+			sefor 2:
+				mostre 'hu';
+				ok
+			casocontrario:
+				
+		}
+
+		nomedafuncao();
+
+		c vale nomedafuncao('palavra', 'a', 1.1);
+
+	}
+}
