@@ -86,17 +86,18 @@ MIOLOS : MIOLO MIOLOS
        | 
        ;
        
-MIOLO : CHAMADAFUNCAO
+MIOLO : CHAMADAFUNCAO ';'
       | CMD
       ;              
 
-CHAMADAFUNCAO: _ID '(' PARAM_CHAMADA ')' ';'
+CHAMADAFUNCAO: _ID '(' PARAM_CHAMADA ')'
 	     ;     
 
 PARAM_CHAMADA: FS
 	     ;
 
 FS: F ',' FS
+  | F
   |
   ;
 
