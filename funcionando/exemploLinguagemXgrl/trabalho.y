@@ -86,11 +86,11 @@ MIOLOS : MIOLO MIOLOS
        | 
        ;
        
-MIOLO : CHAMADAFUNCAO ';'
+MIOLO : CHAMADAFUNCAO
       | CMD
       ;              
 
-CHAMADAFUNCAO: _ID '(' PARAM_CHAMADA ')'
+CHAMADAFUNCAO: _ID '(' PARAM_CHAMADA ')' ';'
 	     ;     
 
 PARAM_CHAMADA: FS
@@ -130,7 +130,7 @@ MOSTRE: _MOSTRE E ';'
       ; 
 
 CMD_ATRIB : _ID INDICE _ATRIB E ';'
-	  | _ID INDICE _ATRIB CHAMADAFUNCAO ';'
+	  | _ID INDICE _ATRIB CHAMADAFUNCAO
           ;
 
 CMD_ATRIB_SPV : _ID INDICE _ATRIB E
