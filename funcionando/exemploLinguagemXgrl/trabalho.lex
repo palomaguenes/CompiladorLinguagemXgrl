@@ -20,7 +20,6 @@ FACA		[Ff][Aa][Cc][Aa]
 ENQUANTO	[Ee][Nn][Qq][Uu][Aa][Nn][Tt][Oo]
 REPITA		[Rr][Ee][Pp][Ii][Tt][Aa]
 EXECUTE		[Ee][Xx][Ee][Cc][Uu][Tt][Ee]
-FUNCTION	[Ff][Uu][Nn][Cc][Tt][Ii][Oo][Nn]
 
 ESCOLHA 	[Ee][Ss][Cc][Oo][Ll][Hh][Aa]
 SEFOR		[Ss][Ee][Ff][Oo][Rr]
@@ -62,7 +61,6 @@ CTE_NUMEROCOMPONTO {REAL}
 {ENQUANTO} 	{ yylval = yytext; return _ENQUANTO; }
 {REPITA}	{ yylval = yytext; return _REPITA; }
 {EXECUTE}   { yylval = yytext; return _EXECUTE; }
-{FUNCTION}  { yylval = yytext; return _FUNCTION; }
 
 {ESCOLHA}  { yylval = yytext; return _ESCOLHA; }
 {SEFOR}  { yylval = yytext; return _SEFOR; }
