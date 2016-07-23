@@ -46,51 +46,64 @@ CTE_NUMEROGRANDECOMPONTO {REAL}
 
 {WS} {}
 
-"TUDAO"					{ yylval = yytext; return _TUDAO; }
-{USANDOISSO} 			{ yylval = yytext; return _USANDOISSO; }
-{PALAVRA} 				{ yylval = yytext; return _PALAVRA; }
-{NUMEROSEMPONTO} 		{ yylval = yytext; return _NUMEROSEMPONTO; }
-{NUMEROCOMPONTO} 		{ yylval = yytext; return _NUMEROCOMPONTO; }
-{NUMEROGRANDECOMPONTO} 	{ yylval = yytext; return _NUMEROGRANDECOMPONTO; }
-{SIMBOLO}				{ yylval = yytext; return _SIMBOLO; }
-{EXECUTEISSO} 			{ yylval = yytext; return _EXECUTEISSO; }
+"TUDAO"					{  trata_folha(); return _TUDAO; }
+{USANDOISSO} 			{  trata_folha(); return _USANDOISSO; }
+{PALAVRA} 				{  trata_folha(); return _PALAVRA; }
+{NUMEROSEMPONTO} 		{  trata_folha(); return _NUMEROSEMPONTO; }
+{NUMEROCOMPONTO} 		{  trata_folha(); return _NUMEROCOMPONTO; }
+{NUMEROGRANDECOMPONTO} 	{  trata_folha(); return _NUMEROGRANDECOMPONTO; }
+{SIMBOLO}				{  trata_folha(); return _SIMBOLO; }
+{EXECUTEISSO} 			{  trata_folha(); return _EXECUTEISSO; }
 
-{MOSTRE} 	{ yylval = yytext; return _MOSTRE; }
-{SE}		{ yylval = yytext; return _SE; }
-{EHVERDADE} { yylval = yytext; return _EHVERDADE; }
-{EHMENTIRA} { yylval = yytext; return _EHMENTIRA; }
-{COM} 		{ yylval = yytext; return _COM; }
-{FACA} 		{ yylval = yytext; return _FACA; }
-{ENQUANTO} 	{ yylval = yytext; return _ENQUANTO; }
-{REPITA}	{ yylval = yytext; return _REPITA; }
-{EXECUTE}   { yylval = yytext; return _EXECUTE; }
+{MOSTRE} 	{  trata_folha(); return _MOSTRE; }
+{SE}		{  trata_folha(); return _SE; }
+{EHVERDADE} {  trata_folha(); return _EHVERDADE; }
+{EHMENTIRA} {  trata_folha(); return _EHMENTIRA; }
+{COM} 		{  trata_folha(); return _COM; }
+{FACA} 		{  trata_folha(); return _FACA; }
+{ENQUANTO} 	{  trata_folha(); return _ENQUANTO; }
+{REPITA}	{  trata_folha(); return _REPITA; }
+{EXECUTE}   {  trata_folha(); return _EXECUTE; }
 
-{ESCOLHA}  { yylval = yytext; return _ESCOLHA; }
-{SEFOR}  { yylval = yytext; return _SEFOR; }
-{OK}  { yylval = yytext; return _OK; }
-{CASOCONTRARIO}  { yylval = yytext; return _CASOCONTRARIO; }
+{ESCOLHA}  {  trata_folha(); return _ESCOLHA; }
+{SEFOR}  {  trata_folha(); return _SEFOR; }
+{OK}  {  trata_folha(); return _OK; }
+{CASOCONTRARIO}  {  trata_folha(); return _CASOCONTRARIO; }
 
-{FUNCAO}	{ yylval = yytext; return _FUNCAO; }
-{RECEBE}	{ yylval = yytext; return _RECEBE; }
-{RETORNA}	{ yylval = yytext; return _RETORNA; }
-{NADA}		{ yylval = yytext; return _NADA; }
+{FUNCAO}	{  trata_folha(); return _FUNCAO; }
+{RECEBE}	{  trata_folha(); return _RECEBE; }
+{RETORNA}	{  trata_folha(); return _RETORNA; }
+{NADA}		{  trata_folha(); return _NADA; }
 
-{CTE_SIMBOLO} 				{ yylval = yytext; return _CTE_SIMBOLO; }
-{CTE_PALAVRA} 				{ yylval = yytext; return _CTE_PALAVRA; }
-{CTE_NUMEROSEMPONTO} 		{ yylval = yytext; return _CTE_NUMEROSEMPONTO; }
-{CTE_NUMEROCOMPONTO} 		{ yylval = yytext; return _CTE_NUMEROCOMPONTO; }
-{CTE_NUMEROGRANDECOMPONTO} 	{ yylval = yytext; return _CTE_NUMEROGRANDECOMPONTO; }
+{CTE_SIMBOLO} 				{ trata_aspas_simples(); return _CTE_SIMBOLO; }
+{CTE_PALAVRA} 				{ trata_aspas_simples(); return _CTE_PALAVRA; }
+{CTE_NUMEROSEMPONTO} 		{ trata_folha(); return _CTE_NUMEROSEMPONTO; }
+{CTE_NUMEROCOMPONTO} 		{ trata_folha(); return _CTE_NUMEROCOMPONTO; }
+{CTE_NUMEROGRANDECOMPONTO} 	{ trata_folha(); return _CTE_NUMEROGRANDECOMPONTO; }
 
-{VALE}			{ yylval = yytext; return _ATRIB; }
+{VALE}			{ trata_folha(); return _ATRIB; }
 
-{RESTO}			{ yylval = yytext; return _RESTO; }
+{RESTO}			{  trata_folha(); return _RESTO; }
 
-{ID}  { yylval = yytext; return _ID; }
+{ID}  {  trata_folha(); return _ID; }
 
-.     { yylval = yytext; return yytext[0]; }
+.     {  trata_folha(); return yytext[0]; }
 
 %%
 
+void trata_folha() {
+  yylval.v = yytext;
+  yylval.t = "";
+  yylval.c = "";
+  yylval.lst.clear();
+  
+  yyrowno += strlen( yytext ); 
+}
+
+void trata_aspas_simples() {
+  trata_folha(); 
+  yylval.v = "\"" + yylval.v.substr( 1, yylval.v.length()-2 ) + "\""; 
+}
  
 
 
