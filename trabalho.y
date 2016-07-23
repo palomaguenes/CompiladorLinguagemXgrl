@@ -8,8 +8,22 @@
 
 using namespace std;
 
+struct Tipo {
+  string nome;  // nome na nossa linguagem
+  string decl;  // declaração correspondente em c-assembly
+  string fmt;   // formato para "printf"
+};
+
+Tipo Integer = { "numerosemponto", "int", "d" };
+Tipo Float =   { "numerocomponto", "float", "f" };
+Tipo Double =  { "numerograndecomponto", "double", "lf" };
+Tipo Boolean = { "vouf", "int", "d" };
+Tipo String =  { "palavra", "char[256]", "s" };
+Tipo Char =    { "simbolo", "char", "c" };
+
 struct Atributo {
-  string v, t, c;
+  string v, c;
+  Tipo t;
   vector<string> lst;
 }; 
 
@@ -20,7 +34,7 @@ int yyparse();
 void yyerror(const char *);
 void erro( string );
 
-map<string,string> ts;
+map<string,Tipo> ts;
 
 ostream& operator << ( ostream& o, const vector<string>& st ) {
   cout << "[ ";
@@ -39,8 +53,8 @@ void declara_variavel( Atributo& ss,
     if( ts.find( s1.lst[i] ) != ts.end() ) 
       erro( "Variável já declarada: " + s1.lst[i] );
     else {
-      ts[ s1.lst[i] ] = s3.c; 
-      ss.c += s3.c + " " + s1.lst[i] + ";\n"; 
+      ts[ s1.lst[i] ] = s3.t; 
+      ss.c += s3.t.decl + " " + s1.lst[i] + ";\n"; 
     }  
   }
 }
@@ -109,12 +123,12 @@ IDS : IDS '&' _ID { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
     | _ID		  { $$.lst.push_back( $1.v ); }
     ; 
 
-TIPO : _NUMEROSEMPONTO	{ $$.c = "int"; }
-     | _NUMEROCOMPONTO	{ $$.c = "float"; }
-	 | _NUMEROGRANDECOMPONTO { $$.c = "double"; }
+TIPO : _NUMEROSEMPONTO		{ $$.t = Integer; }
+     | _NUMEROCOMPONTO		{ $$.t = Float; }
+	 | _NUMEROGRANDECOMPONTO { $$.t = Double; }
      | _PALAVRA TAM_PALAVRA
-	 | _SIMBOLO			{ $$.c = "char"; }
-	 | _VOUF			{ $$.c = "int"; }
+	 | _SIMBOLO			{ $$.t = Char; }
+	 | _VOUF			{ $$.t = Boolean; }
      ;
 
 TAM_PALAVRA: '[' _CTE_NUMEROSEMPONTO ']'
@@ -168,7 +182,7 @@ CASO : _SEFOR F ':' MIOLOS _OK
 CASOCONTRARIO : _CASOCONTRARIO ':' MIOLOS
 			  ;
 
-MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t + "\\n\", " + $2.v + " );\n"; }
+MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t.fmt + "\\n\", " + $2.v + " );\n"; }
       ; 
 
 CMD_ATRIB : _ID INDICE _ATRIB E ';'
@@ -212,11 +226,11 @@ E : E '+' E
   | F
   ;
   
-F : _CTE_PALAVRA 		{ $$ = $1; $$.t = "s"; }
-  | _CTE_NUMEROSEMPONTO { $$ = $1; $$.t = "d"; }
-  | _CTE_NUMEROCOMPONTO { $$ = $1; $$.t = "f"; }
-  | _CTE_NUMEROGRANDECOMPONTO { $$ = $1; $$.t = "lf"; }
-  | _CTE_SIMBOLO		{ $$ = $1; $$.t = "c"; }
+F : _CTE_PALAVRA 		{ $$ = $1; $$.t = String; }
+  | _CTE_NUMEROSEMPONTO { $$ = $1; $$.t = Integer; }
+  | _CTE_NUMEROCOMPONTO { $$ = $1; $$.t = Float; }
+  | _CTE_NUMEROGRANDECOMPONTO { $$ = $1; $$.t = Double; }
+  | _CTE_SIMBOLO		{ $$ = $1; $$.t = Char; }
   | _ID
   ;
  
