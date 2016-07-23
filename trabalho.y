@@ -3,14 +3,47 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <map>
+#include <vector>
 
 using namespace std;
 
-#define YYSTYPE string
+struct Atributo {
+  string v, t, c;
+  vector<string> lst;
+}; 
+
+#define YYSTYPE Atributo
 
 int yylex();
 int yyparse();
 void yyerror(const char *);
+void erro( string );
+
+map<string,string> ts;
+
+ostream& operator << ( ostream& o, const vector<string>& st ) {
+  cout << "[ ";
+  for( vector<string>::const_iterator itr = st.begin();
+       itr != st.end(); ++itr )
+    cout << *itr << " "; 
+       
+  cout << "]";
+  return o;     
+}
+
+void declara_variavel( Atributo& ss, 
+                       const Atributo& s1, const Atributo& s3 ) {
+  ss.c = "";
+  for( int i = 0; i < s1.lst.size(); i++ ) {
+    if( ts.find( s1.lst[i] ) != ts.end() ) 
+      erro( "Variável já declarada: " + s1.lst[i] );
+    else {
+      ts[ s1.lst[i] ] = s3.c; 
+      ss.c += s3.c + " " + s1.lst[i] + ";\n"; 
+    }  
+  }
+}
 
 %}
 
@@ -33,15 +66,17 @@ void yyerror(const char *);
 
 %%
 
-S : TUDAO { cout << "Aceito" << endl; }
+S : TUDAO { cout << $1.c << endl; }
   ;
     
 TUDAO  : _TUDAO '{' USANDOISSO FUNCTIONDECLS EXECUTEISSO'}'
+		{ $$.c = "#include <stdlib.h>\n"
+                "#include <stdio.h>\n\n" "int main() {\n" + $2.c + $3.c + $4.c+ "}\n"; }
        ;
 
-USANDOISSO  : _USANDOISSO '{' DECLS '}'
-	    |
-	    ;
+USANDOISSO  : _USANDOISSO '{' DECLS '}'  { $$.c = $2.c; }
+	    	| { $$.c = ""; }
+	    	;
 
 FUNCTIONDECLS : FUNCTIONDECL FUNCTIONDECLS
 			  |
@@ -60,20 +95,20 @@ EXECUTEISSO : _EXECUTEISSO '{' MIOLOS '}'
 	    |
 	    ;
 
-DECLS : DECL ';' DECLS
-      | DECL ';'
+DECLS : DECL ';' DECLS { $$.c = $1.c + $3.c; }
+      |	DECL ';'
       ;
      
-DECL : IDS ':' TIPO        
+DECL : IDS ':' TIPO  { declara_variavel( $$, $1, $3 ); }     
      ;      
 
-IDS : _ID '&' IDS
-    | _ID
+IDS : _ID '&' IDS { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
+    | _ID		  { $$.lst.push_back( $1.v ); }
     ; 
 
-TIPO : _NUMEROSEMPONTO
-     | _NUMEROCOMPONTO
-	 | _NUMEROGRANDECOMPONTO
+TIPO : _NUMEROSEMPONTO { $$.c = "int"; }
+     | _NUMEROCOMPONTO { $$.c = "float"; }
+	 | _NUMEROGRANDECOMPONTO { $$.c = "double"; }
      | _PALAVRA TAM_PALAVRA
 	 | _SIMBOLO
      ;
@@ -127,7 +162,7 @@ CASO : _SEFOR F ':' MIOLOS _OK
 CASOCONTRARIO : _CASOCONTRARIO ':' MIOLOS
 			  ;
 
-MOSTRE: _MOSTRE E ';'
+MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $3.t + "\\n\", " + $3.v + " );\n"; }
       ; 
 
 CMD_ATRIB : _ID INDICE _ATRIB E ';'
@@ -171,8 +206,8 @@ E : E '+' E
   | F
   ;
   
-F : _CTE_PALAVRA
-  | _CTE_NUMEROSEMPONTO
+F : _CTE_PALAVRA 		{ $$ = $1; $$.t = "s"; }
+  | _CTE_NUMEROSEMPONTO { $$ = $1; $$.t = "d"; }
   | _CTE_NUMEROCOMPONTO
   | _CTE_NUMEROGRANDECOMPONTO
   | _CTE_SIMBOLO
@@ -183,13 +218,20 @@ F : _CTE_PALAVRA
 
 #include "lex.yy.c"
 
+void erro( string st ) {
+  yyerror( st.c_str() );
+  exit( 1 );
+}
+
 void yyerror( const char* st )
 {
    if( strlen( yytext ) == 0 )
-     printf( "%s\nNo final do arquivo\n", st );
+     fprintf( stderr, "%s\nNo final do arquivo\n", st );
    else  
-     printf( "%s\nProximo a: %s\nlinha: %d\n", st, yytext, yylineno );
+     fprintf( stderr, "%s\nProximo a: %s\nlinha/coluna: %d/%d\n", st, 
+              yytext, yylineno, yyrowno - (int) strlen( yytext ) );
 }
+
 
 int main( int argc, char* argv[] )
 {
