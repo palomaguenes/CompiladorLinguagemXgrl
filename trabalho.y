@@ -51,13 +51,31 @@ void declara_variavel( Atributo& ss,
   ss.c = "";
   for( int i = 0; i < s1.lst.size(); i++ ) {
     if( ts.find( s1.lst[i] ) != ts.end() ) 
-      erro( "Variável já declarada: " + s1.lst[i] );
+      erro( "Você já declarou a variável " + s1.lst[i] );
     else {
       ts[ s1.lst[i] ] = s3.t; 
       ss.c += s3.t.decl + " " + s1.lst[i] + ";\n"; 
     }  
   }
 }
+
+void gera_codigo_atribuicao( Atributo& ss, 
+                             const Atributo& s1, 
+                             const Atributo& s3 ) {
+  if( s1.t.nome == s3.t.nome ){
+    ss.c = s1.c + s3.c + "  " + s1.v + " = " + s3.v + ";\n";
+  }
+}
+
+void busca_tipo_da_variavel( Atributo& ss, const Atributo& s1 ) {
+  if( ts.find( s1.v ) == ts.end() )
+        erro( "Variável não declarada: " + s1.v );
+  else {
+    ss.t = ts[ s1.v ];
+    ss.v = s1.v;
+  }
+}
+
 
 %}
 
@@ -185,12 +203,16 @@ CASOCONTRARIO : _CASOCONTRARIO ':' MIOLOS
 MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t.fmt + "\\n\", " + $2.v + " );\n"; }
       ; 
 
-CMD_ATRIB : _ID INDICE _ATRIB E ';'
-	  | _ID INDICE _ATRIB CHAMADAFUNCAO
+CMD_ATRIB : IDATR INDICE _ATRIB E ';'
+			{ gera_codigo_atribuicao( $$, $1, $4); }
+	  	  | IDATR INDICE _ATRIB CHAMADAFUNCAO
           ;
 
 CMD_ATRIB_SPV : _ID INDICE _ATRIB E
 				 ;
+
+IDATR: _ID { busca_tipo_da_variavel( $$, $1 ); }		
+	 ;
           
 INDICE : '[' EXPS ']' INDICE
        |
