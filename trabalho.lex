@@ -7,31 +7,31 @@ WS      [\t\n ]
 DIGITO  [0-9]
 LETRA   [A-Za-z_]
 ID      {LETRA}({LETRA}|{DIGITO})*
-REAL ({DIGITO}+[.]{DIGITO}*)|({DIGITO}*[.]{DIGITO}+)
-FLOAT {DIGITO}+("."{DIGITO}+)
+REAL    ({DIGITO}+[.]{DIGITO}*)|({DIGITO}*[.]{DIGITO}+)
+FLOAT   {DIGITO}+("."{DIGITO}+)
 
-USANDOISSO 			[Uu][Ss][Aa][Nn][Dd][Oo][[Ii][Ss][Ss][Oo]
-PALAVRA				[Pp][Aa][Ll][Aa][Vv][Rr][Aa]
-SIMBOLO				[Ss][Ii][Mm][Bb][Oo][Ll][Oo]
-NUMEROSEMPONTO		[Nn][Uu][Mm][Ee][Rr][Oo][Ss][Ee][Mm][Pp][Oo][Nn][Tt][Oo]
-NUMEROCOMPONTO		[Nn][Uu][Mm][Ee][Rr][Oo][Cc][Oo][Mm][Pp][Oo][Nn][Tt][Oo]
-NUMEROGRANDECOMPONTO[Nn][Uu][Mm][Ee][Rr][Oo][Gg][Rr][Aa][Nn][Dd][Ee][Cc][Oo][Mm][Pp][Oo][Nn][Tt][Oo]
-VOUF				[Vv][Oo][Uu][Ff]
-EXECUTEISSO			[Ee][Xx][Ee][Cc][Uu][Tt][Ee][Ii][Ss][Ss][Oo]
+USANDOISSO 				[Uu][Ss][Aa][Nn][Dd][Oo][[Ii][Ss][Ss][Oo]
+PALAVRA					[Pp][Aa][Ll][Aa][Vv][Rr][Aa]
+SIMBOLO					[Ss][Ii][Mm][Bb][Oo][Ll][Oo]
+NUMEROSEMPONTO			[Nn][Uu][Mm][Ee][Rr][Oo][Ss][Ee][Mm][Pp][Oo][Nn][Tt][Oo]
+NUMEROCOMPONTO			[Nn][Uu][Mm][Ee][Rr][Oo][Cc][Oo][Mm][Pp][Oo][Nn][Tt][Oo]
+NUMEROGRANDECOMPONTO	[Nn][Uu][Mm][Ee][Rr][Oo][Gg][Rr][Aa][Nn][Dd][Ee][Cc][Oo][Mm][Pp][Oo][Nn][Tt][Oo]
+VOUF					[Vv][Oo][Uu][Ff]
 
-MOSTRE		[Mm][Oo][Ss][Tt][Rr][Ee]
-SE			[Ss][Ee]
-EHVERDADE	[Ee][Hh][Vv][Ee][Rr][Dd][Aa][Dd][Ee]
-EHMENTIRA	[Ee][Hh][Mm][Ee][Nn][Tt][Ii][Rr][Aa]
-COM			[Cc][Oo][Mm]
-FACA		[Ff][Aa][Cc][Aa]
-ENQUANTO	[Ee][Nn][Qq][Uu][Aa][Nn][Tt][Oo]
-REPITA		[Rr][Ee][Pp][Ii][Tt][Aa]
-EXECUTE		[Ee][Xx][Ee][Cc][Uu][Tt][Ee]
+EXECUTEISSO		[Ee][Xx][Ee][Cc][Uu][Tt][Ee][Ii][Ss][Ss][Oo]
 
-ESCOLHA 	[Ee][Ss][Cc][Oo][Ll][Hh][Aa]
-SEFOR		[Ss][Ee][Ff][Oo][Rr]
-OK		[Oo][Kk]
+MOSTRE			[Mm][Oo][Ss][Tt][Rr][Ee]
+SE				[Ss][Ee]
+EHVERDADE		[Ee][Hh][Vv][Ee][Rr][Dd][Aa][Dd][Ee]
+EHMENTIRA		[Ee][Hh][Mm][Ee][Nn][Tt][Ii][Rr][Aa]
+COM				[Cc][Oo][Mm]
+FACA			[Ff][Aa][Cc][Aa]
+ENQUANTO		[Ee][Nn][Qq][Uu][Aa][Nn][Tt][Oo]
+REPITA			[Rr][Ee][Pp][Ii][Tt][Aa]
+EXECUTE			[Ee][Xx][Ee][Cc][Uu][Tt][Ee]
+ESCOLHA 		[Ee][Ss][Cc][Oo][Ll][Hh][Aa]
+SEFOR			[Ss][Ee][Ff][Oo][Rr]
+OK				[Oo][Kk]
 CASOCONTRARIO	[Cc][Aa][Ss][Oo][Cc][Oo][Nn][Tt][Rr][Aa][Rr][Ii][Oo]
 
 FUNCAO	[Ff][Uu][Nn][Cc][Aa][Oo]
@@ -41,7 +41,7 @@ NADA	[Nn][Aa][Dd][Aa]
 
 VALE	[Vv][Aa][Ll][Ee]
 
-RESTO [Rr][Ee][Ss][Tt][Oo]
+RESTO   [Rr][Ee][Ss][Tt][Oo]
 
 CTE_SIMBOLO "'"([^'\n]|"''")"'"
 CTE_PALAVRA	"'"([^'\n]|"''")*"'"
@@ -72,10 +72,10 @@ CTE_NUMEROGRANDECOMPONTO {REAL}
 {REPITA}	{  trata_folha(); return _REPITA; }
 {EXECUTE}   {  trata_folha(); return _EXECUTE; }
 
-{ESCOLHA}  {  trata_folha(); return _ESCOLHA; }
-{SEFOR}  {  trata_folha(); return _SEFOR; }
-{OK}  {  trata_folha(); return _OK; }
-{CASOCONTRARIO}  {  trata_folha(); return _CASOCONTRARIO; }
+{ESCOLHA}		{  trata_folha(); return _ESCOLHA; }
+{SEFOR}  		{  trata_folha(); return _SEFOR; }
+{OK}			{  trata_folha(); return _OK; }
+{CASOCONTRARIO}	{  trata_folha(); return _CASOCONTRARIO; }
 
 {FUNCAO}	{  trata_folha(); return _FUNCAO; }
 {RECEBE}	{  trata_folha(); return _RECEBE; }
@@ -88,30 +88,30 @@ CTE_NUMEROGRANDECOMPONTO {REAL}
 {CTE_NUMEROCOMPONTO} 		{ trata_folha(); return _CTE_NUMEROCOMPONTO; }
 {CTE_NUMEROGRANDECOMPONTO} 	{ trata_folha(); return _CTE_NUMEROGRANDECOMPONTO; }
 
-{VALE}			{ trata_folha(); return _ATRIB; }
+{VALE}		{ trata_folha(); return _ATRIB; }
 
-{RESTO}			{  trata_folha(); return _RESTO; }
+{RESTO}		{  trata_folha(); return _RESTO; }
 
-{ID}  {  trata_folha(); return _ID; }
+{ID}	{  trata_folha(); return _ID; }
 
 .     {  trata_folha(); return yytext[0]; }
 
 %%
 
 void trata_folha() {
-	yylval.v = yytext;
-	yylval.t.nome = "";
-  yylval.t.decl = "";
-  yylval.t.fmt = "";
-  yylval.c = "";
-	yylval.lst.clear();
-  
-  yyrowno += strlen( yytext ); 
+    yylval.v = yytext;
+    yylval.t.nome = "";
+    yylval.t.decl = "";
+    yylval.t.fmt = "";
+    yylval.c = "";
+    yylval.lst.clear();
+
+    yyrowno += strlen( yytext ); 
 }
 
 void trata_aspas_simples() {
-  trata_folha(); 
-  yylval.v = "\"" + yylval.v.substr( 1, yylval.v.length()-2 ) + "\""; 
+    trata_folha(); 
+    yylval.v = "\"" + yylval.v.substr( 1, yylval.v.length()-2 ) + "\""; 
 }
  
 
