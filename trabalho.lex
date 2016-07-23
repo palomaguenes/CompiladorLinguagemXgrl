@@ -1,3 +1,8 @@
+%{
+int yyrowno = 1;
+void trata_folha();
+void trata_aspas_simples();
+%}
 WS      [\t\n ]
 DIGITO  [0-9]
 LETRA   [A-Za-z_]
