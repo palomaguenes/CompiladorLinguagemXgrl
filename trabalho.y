@@ -72,7 +72,7 @@ S : TUDAO { cout << $1.c << endl; }
 TUDAO  : _TUDAO '{' USANDOISSO FUNCTIONDECLS EXECUTEISSO '}'
 		{ $$.c = "#include <stdlib.h>\n"
                  "#include <stdio.h>\n\n" + $3.c + "\n" + $4.c +
-				 "int main() {\n" + $1.c + "}\n";	  
+				 "int main() {\n" + $5.c + "}\n";	  
 		 }
        ;
 
@@ -94,7 +94,8 @@ PARAMETROS : DECL ',' PARAMETROS
            ;
      
 EXECUTEISSO : _EXECUTEISSO '{' MIOLOS '}'
-	    |
+		  {$$.c = $3.c; }
+	    | {$$.c = "";}
 	    ;
 
 DECLS : DECL ';' DECLS { $$.c = $1.c + $3.c; }
@@ -121,7 +122,9 @@ TAM_PALAVRA: '[' _CTE_NUMEROSEMPONTO ']'
 
   
 MIOLOS : MIOLO MIOLOS
+		 { $$.c = $1.c + $2.c; }
        | 
+		 { $$.c = ""; }
        ;
        
 MIOLO : CHAMADAFUNCAO
@@ -164,7 +167,7 @@ CASO : _SEFOR F ':' MIOLOS _OK
 CASOCONTRARIO : _CASOCONTRARIO ':' MIOLOS
 			  ;
 
-MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $3.t + "\\n\", " + $3.v + " );\n"; }
+MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t + "\\n\", " + $2.v + " );\n"; }
       ; 
 
 CMD_ATRIB : _ID INDICE _ATRIB E ';'
@@ -210,9 +213,9 @@ E : E '+' E
   
 F : _CTE_PALAVRA 		{ $$ = $1; $$.t = "s"; }
   | _CTE_NUMEROSEMPONTO { $$ = $1; $$.t = "d"; }
-  | _CTE_NUMEROCOMPONTO
-  | _CTE_NUMEROGRANDECOMPONTO
-  | _CTE_SIMBOLO
+  | _CTE_NUMEROCOMPONTO { $$ = $1; $$.t = "f"; }
+  | _CTE_NUMEROGRANDECOMPONTO { $$ = $1; $$.t = "lf"; }
+  | _CTE_SIMBOLO		{ $$ = $1; $$.t = "c"; }
   | _ID
   ;
  
