@@ -69,12 +69,14 @@ void declara_variavel( Atributo& ss,
 S : TUDAO { cout << $1.c << endl; }
   ;
     
-TUDAO  : _TUDAO '{' USANDOISSO FUNCTIONDECLS EXECUTEISSO'}'
+TUDAO  : _TUDAO '{' USANDOISSO FUNCTIONDECLS EXECUTEISSO '}'
 		{ $$.c = "#include <stdlib.h>\n"
-                "#include <stdio.h>\n\n" "int main() {\n" + $2.c + $3.c + $4.c+ "}\n"; }
+                 "#include <stdio.h>\n\n" + $3.c + "\n" + $4.c +
+				 "int main() {\n" + $1.c + "}\n";	  
+		 }
        ;
 
-USANDOISSO  : _USANDOISSO '{' DECLS '}'  { $$.c = $2.c; }
+USANDOISSO  : _USANDOISSO '{' DECLS '}'  { $$.c = $3.c; }
 	    	| { $$.c = ""; }
 	    	;
 

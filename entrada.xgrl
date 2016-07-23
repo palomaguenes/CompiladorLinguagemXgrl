@@ -1,12 +1,11 @@
 TUDAO{
 	usandoisso{
-		a & b & c: palavra;
 		m & n: numerosemponto;
 		x & l: numerocomponto;
 		d : numerograndecomponto;
 	}
 
-	funcao nomedafuncao recebe(k: palavra, k: simbolo, p: numerocomponto) retorna (b:palavra){
+	funcao nomedafuncao recebe(k: palavra, m: simbolo, p: numerocomponto) retorna (b:palavra){
 
 	}
 	
