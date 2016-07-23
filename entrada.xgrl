@@ -1,11 +1,12 @@
 TUDAO{
 	usandoisso{
+		booleano: vouf;
 		m & n: numerosemponto;
 		x & l: numerocomponto;
 		d : numerograndecomponto;
 	}
 
-	funcao nomedafuncao recebe(k: palavra, m: simbolo, p: numerocomponto) retorna (b:palavra){
+	funcao nomedafuncao recebe(k: palavra, sim: simbolo, p: numerocomponto) retorna (b:palavra){
 
 	}
 	

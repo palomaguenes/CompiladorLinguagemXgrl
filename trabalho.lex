@@ -16,6 +16,7 @@ SIMBOLO				[Ss][Ii][Mm][Bb][Oo][Ll][Oo]
 NUMEROSEMPONTO		[Nn][Uu][Mm][Ee][Rr][Oo][Ss][Ee][Mm][Pp][Oo][Nn][Tt][Oo]
 NUMEROCOMPONTO		[Nn][Uu][Mm][Ee][Rr][Oo][Cc][Oo][Mm][Pp][Oo][Nn][Tt][Oo]
 NUMEROGRANDECOMPONTO[Nn][Uu][Mm][Ee][Rr][Oo][Gg][Rr][Aa][Nn][Dd][Ee][Cc][Oo][Mm][Pp][Oo][Nn][Tt][Oo]
+VOUF				[Vv][Oo][Uu][Ff]
 EXECUTEISSO			[Ee][Xx][Ee][Cc][Uu][Tt][Ee][Ii][Ss][Ss][Oo]
 
 MOSTRE		[Mm][Oo][Ss][Tt][Rr][Ee]
@@ -58,6 +59,7 @@ CTE_NUMEROGRANDECOMPONTO {REAL}
 {NUMEROCOMPONTO} 		{  trata_folha(); return _NUMEROCOMPONTO; }
 {NUMEROGRANDECOMPONTO} 	{  trata_folha(); return _NUMEROGRANDECOMPONTO; }
 {SIMBOLO}				{  trata_folha(); return _SIMBOLO; }
+{VOUF}					{  trata_folha(); return _VOUF; }
 {EXECUTEISSO} 			{  trata_folha(); return _EXECUTEISSO; }
 
 {MOSTRE} 	{  trata_folha(); return _MOSTRE; }

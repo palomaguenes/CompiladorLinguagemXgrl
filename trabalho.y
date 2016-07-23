@@ -49,7 +49,7 @@ void declara_variavel( Atributo& ss,
 
 %token _ID _TUDAO _USANDOISSO _EXECUTEISSO _SE _EHVERDADE _EHMENTIRA 
 %token _MOSTRE _ATRIB _COM _FACA _ENQUANTO _REPITA _EXECUTE 
-%token _NUMEROSEMPONTO _PALAVRA _NUMEROCOMPONTO _NUMEROGRANDECOMPONTO _SIMBOLO
+%token _NUMEROSEMPONTO _PALAVRA _NUMEROCOMPONTO _NUMEROGRANDECOMPONTO _SIMBOLO _VOUF
 %token _ESCOLHA _SEFOR _OK _CASOCONTRARIO
 %token _FUNCAO _RECEBE _RETORNA _NADA
 
@@ -109,11 +109,12 @@ IDS : IDS '&' _ID { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
     | _ID		  { $$.lst.push_back( $1.v ); }
     ; 
 
-TIPO : _NUMEROSEMPONTO { $$.c = "int"; }
-     | _NUMEROCOMPONTO { $$.c = "float"; }
+TIPO : _NUMEROSEMPONTO	{ $$.c = "int"; }
+     | _NUMEROCOMPONTO	{ $$.c = "float"; }
 	 | _NUMEROGRANDECOMPONTO { $$.c = "double"; }
      | _PALAVRA TAM_PALAVRA
-	 | _SIMBOLO
+	 | _SIMBOLO			{ $$.c = "char"; }
+	 | _VOUF			{ $$.c = "int"; }
      ;
 
 TAM_PALAVRA: '[' _CTE_NUMEROSEMPONTO ']'
