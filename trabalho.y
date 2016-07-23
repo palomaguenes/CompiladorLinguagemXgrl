@@ -104,7 +104,7 @@ DECLS : DECL ';' DECLS { $$.c = $1.c + $3.c; }
 DECL : IDS ':' TIPO  { declara_variavel( $$, $1, $3 ); }     
      ;      
 
-IDS : _ID '&' IDS { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
+IDS : IDS '&' _ID { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
     | _ID		  { $$.lst.push_back( $1.v ); }
     ; 
 
