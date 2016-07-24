@@ -35,6 +35,7 @@ void yyerror(const char *);
 void erro( string );
 
 map<string,Tipo> ts;
+map< string, map< string, Tipo > > tiporesultado;
 
 ostream& operator << ( ostream& o, const vector<string>& st ) {
   cout << "[ ";
@@ -76,6 +77,26 @@ void busca_tipo_da_variavel( Atributo& ss, const Atributo& s1 ) {
   }
 }
 
+string par( Tipo a, Tipo b ) {
+  return a.nome + "," + b.nome;  
+}
+
+void gera_codigo_operador( Atributo& ss, 
+                           const Atributo& s1, 
+                           const Atributo& s2, 
+                           const Atributo& s3 ) {
+  if( tiporesultado.find( s2.v ) != tiporesultado.end() ) {
+    if( tiporesultado[s2.v].find( par( s1.t, s3.t ) ) != tiporesultado[s2.v].end() ) {
+      ss.v = "t1"; // Precisa gerar um nome de variável temporária.
+      ss.t =  tiporesultado[s2.v][par( s1.t, s3.t )];
+      ss.c = s1.c + s3.c + "  " + ss.v + " = " + s1.v + s2.v + s3.v + ";\n";
+    }
+    else
+      erro( "O operador '" + s2.v + "' não está definido para os tipos " + s1.t.nome + " e " + s3.t.nome + "." );
+  }
+  else
+    erro( "Operador '" + s2.v + "' não definido." );
+}
 
 %}
 
@@ -103,7 +124,7 @@ S : TUDAO { cout << $1.c << endl; }
     
 TUDAO  : _TUDAO '{' USANDOISSO FUNCTIONDECLS EXECUTEISSO '}'
 		{ $$.c = "#include <stdlib.h>\n"
-                 "#include <stdio.h>\n\n" + $3.c + "\n" + $4.c +
+             "#include <stdio.h>\n\n" + $3.c + "\n" + $4.c +
 				 "int main() {\n" + $5.c + "}\n";	  
 		 }
        ;
@@ -204,15 +225,15 @@ MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t.fmt + "\\n\", " + $2.v + " 
       ; 
 
 CMD_ATRIB : IDATR INDICE _ATRIB E ';'
-			{ gera_codigo_atribuicao( $$, $1, $4); }
-	  	  | IDATR INDICE _ATRIB CHAMADAFUNCAO
+			      { gera_codigo_atribuicao( $$, $1, $4); }
+	  	    | IDATR INDICE _ATRIB CHAMADAFUNCAO
           ;
 
 CMD_ATRIB_SPV : _ID INDICE _ATRIB E
-				 ;
+     				  ;
 
-IDATR: _ID { busca_tipo_da_variavel( $$, $1 ); }		
-	 ;
+IDATR: _ID { busca_tipo_da_variavel( $$, $1 ); }	
+	   ;
           
 INDICE : '[' EXPS ']' INDICE
        |
@@ -235,12 +256,12 @@ CMD_WHILE : _REPITA _SE '(' E ')' '{' CMD '}'
 CMD_DOWHILE : _EXECUTE '{' CMD '}' _REPITA _SE '(' E ')' ';'
 			;
 
-E : E '+' E
-  | E '-' E
-  | E '*' E
-  | E '/' E
-  | E '>' E
-  | E '<' E
+E : E '+' E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  | E '-' E { gera_codigo_operador( $$, $1, $2, $3 ); }     
+  | E '*' E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  | E '/' E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  | E '>' E 
+  | E '<' E 
   | E "<=" E
   | E ">=" E
   | _RESTO '(' E '/' E ')' 
@@ -248,12 +269,13 @@ E : E '+' E
   | F
   ;
   
-F : _CTE_PALAVRA 		{ $$ = $1; $$.t = String; }
+F : _CTE_PALAVRA        { $$ = $1; $$.t = String; }
   | _CTE_NUMEROSEMPONTO { $$ = $1; $$.t = Integer; }
   | _CTE_NUMEROCOMPONTO { $$ = $1; $$.t = Float; }
   | _CTE_NUMEROGRANDECOMPONTO { $$ = $1; $$.t = Double; }
-  | _CTE_SIMBOLO		{ $$ = $1; $$.t = Char; }
+  | _CTE_SIMBOLO        { $$ = $1; $$.t = Char; }
   | _ID
+  | '(' E ')'
   ;
  
 %%
@@ -274,9 +296,35 @@ void yyerror( const char* st )
               yytext, yylineno, yyrowno - (int) strlen( yytext ) );
 }
 
+void inicializa_tabela_de_resultado_de_operacoes() {
+  
+    map< string, Tipo > r;
+
+    r[par(Integer, Integer)] = Integer;    
+    r[par(Integer, Float)] = Float;    
+    r[par(Integer, Double)] = Double;    
+    r[par(Float, Integer)] = Float;    
+    r[par(Float, Float)] = Float;    
+    r[par(Float, Double)] = Double;    
+    r[par(Double, Integer)] = Double;    
+    r[par(Double, Float)] = Double;    
+    r[par(Double, Double)] = Double;    
+
+    tiporesultado[ "-" ] = r; 
+    tiporesultado[ "*" ] = r; 
+    tiporesultado[ "/" ] = r; 
+
+    r[par(Char, Char)] = String;      
+    r[par(String, Char)] = String;      
+    r[par(Char, String)] = String;    
+    r[par(String, String)] = String;    
+    tiporesultado[ "+" ] = r; 
+}
+
 
 int main( int argc, char* argv[] )
 {
+  inicializa_tabela_de_resultado_de_operacoes();
   yyparse();
 }
 
