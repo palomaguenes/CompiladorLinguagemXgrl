@@ -26,6 +26,12 @@ TUDAO{
 	executeisso {
 
 		Mostre 'monkeys';
+
+		n vale 1 * 9;
+		
+		m vale 2;
+
+		m vale n + 4 * ( 5 * n ) / ( n + m );
 		
 		se (m = n) ehverdade{
 			mostre 'oi';
@@ -37,9 +43,7 @@ TUDAO{
 			mostre 'ola';
 		}
 
-		a vale 'compiladores';
-
-		com (y vale 5) faca (m vale m+n-1) enquanto (m > 5){
+		com (y vale 5) faca (m vale 1+1) enquanto (m > 5){
 			Mostre 'monkeys';
 		}
 
@@ -47,9 +51,7 @@ TUDAO{
 			mostre 'bananas';
 		}
 
-	 	l vale resto(6/5);
-		
-		n vale 1;
+		x vale 9.77 + 2.1;
 		
 		escolha n {
 			sefor 1 : 
@@ -64,7 +66,7 @@ TUDAO{
 
 		nomedafuncao();
 
-		c vale nomedafuncao('palavra', 'a', 1.1);
+		m vale nomedafuncao('palavra', 'a', 1.1);
 
 	}
 }

@@ -3,7 +3,7 @@ int yyrowno = 1;
 void trata_folha();
 void trata_aspas_simples();
 %}
-WS      [\t\n ]
+WS      [\t ]
 DIGITO  [0-9]
 LETRA   [A-Za-z_]
 ID      {LETRA}({LETRA}|{DIGITO})*
@@ -48,7 +48,10 @@ CTE_PALAVRA	"'"([^'\n]|"''")*"'"
 CTE_NUMEROSEMPONTO {DIGITO}+
 CTE_NUMEROCOMPONTO {FLOAT}
 CTE_NUMEROGRANDECOMPONTO {REAL}
+
 %%
+"\n" { yylineno++; yyrowno = 1; }
+{WS} { yyrowno += 1; }
 
 {WS} {}
 
