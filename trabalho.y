@@ -37,6 +37,23 @@ void erro( string );
 map<string,Tipo> ts;
 map< string, map< string, Tipo > > tiporesultado;
 
+map< string, int > temp_global;
+map< string, int > temp_local;
+bool escopo_local = false;
+
+string toString( int n ) {
+  char buf[256] = "";
+  
+  sprintf( buf, "%d", n );
+  
+  return buf;
+}
+
+string gera_nome_var( Tipo t ) {
+  return "t_" + t.nome + "_" + 
+   toString( ++(escopo_local ? temp_local : temp_global)[t.nome] );
+}
+
 ostream& operator << ( ostream& o, const vector<string>& st ) {
   cout << "[ ";
   for( vector<string>::const_iterator itr = st.begin();
@@ -81,21 +98,46 @@ string par( Tipo a, Tipo b ) {
   return a.nome + "," + b.nome;  
 }
 
-void gera_codigo_operador( Atributo& ss, 
-                           const Atributo& s1, 
-                           const Atributo& s2, 
-                           const Atributo& s3 ) {
+void gera_codigo_operador( Atributo& ss,  const Atributo& s1, const Atributo& s2, const Atributo& s3 ) {
+
   if( tiporesultado.find( s2.v ) != tiporesultado.end() ) {
+
     if( tiporesultado[s2.v].find( par( s1.t, s3.t ) ) != tiporesultado[s2.v].end() ) {
-      ss.v = "t1"; // Precisa gerar um nome de variável temporária.
+     
       ss.t =  tiporesultado[s2.v][par( s1.t, s3.t )];
+      ss.v = gera_nome_var( ss.t );
       ss.c = s1.c + s3.c + "  " + ss.v + " = " + s1.v + s2.v + s3.v + ";\n";
     }
     else
       erro( "O operador '" + s2.v + "' não está definido para os tipos " + s1.t.nome + " e " + s3.t.nome + "." );
+ 
   }
   else
     erro( "Operador '" + s2.v + "' não definido." );
+}
+
+string declara_nvar_temp( Tipo t, int qtde ) {
+  string aux = "";
+   
+  for( int i = 1; i <= qtde; i++ )
+    aux += t.decl + " t_" + t.nome + "_" + toString( i ) + ";\n";
+    
+  return aux;  
+}
+
+string declara_var_temp( map< string, int >& temp ) {
+  string decls = "// variáveis temporárias \n" + 
+    declara_nvar_temp( Integer, temp[Integer.nome] ) +
+    declara_nvar_temp( Float, temp[Float.nome] ) +
+    declara_nvar_temp( Double, temp[Double.nome] ) +
+    declara_nvar_temp( String, temp[String.nome] ) +
+    declara_nvar_temp( Char, temp[Char.nome] ) +
+    declara_nvar_temp( Boolean, temp[Boolean.nome] ) +
+    "\n";
+  
+  temp.clear();
+  
+  return decls;
 }
 
 %}
@@ -123,10 +165,12 @@ S : TUDAO { cout << $1.c << endl; }
   ;
     
 TUDAO  : _TUDAO '{' USANDOISSO FUNCTIONDECLS EXECUTEISSO '}'
-		{ $$.c = "#include <stdlib.h>\n"
-             "#include <stdio.h>\n\n" + $3.c + "\n" + $4.c +
-				 "int main() {\n" + $5.c + "}\n";	  
-		 }
+	     { $$.c = "#include <stdlib.h>\n"
+                "#include <stdio.h>\n\n" + 
+                declara_var_temp( temp_global ) +
+                $3.c + "\n" + $4.c +
+                "int main() {\n" + $5.c + "}\n";
+       }
        ;
 
 USANDOISSO  : _USANDOISSO '{' DECLS '}'  { $$.c = $3.c; }
@@ -274,8 +318,8 @@ F : _CTE_PALAVRA        { $$ = $1; $$.t = String; }
   | _CTE_NUMEROCOMPONTO { $$ = $1; $$.t = Float; }
   | _CTE_NUMEROGRANDECOMPONTO { $$ = $1; $$.t = Double; }
   | _CTE_SIMBOLO        { $$ = $1; $$.t = Char; }
-  | _ID
-  | '(' E ')'
+  | _ID                 { busca_tipo_da_variavel( $$, $1 ); }
+  | '(' E ')'           { $$ = $2; }
   ;
  
 %%
