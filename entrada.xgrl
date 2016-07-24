@@ -29,9 +29,11 @@ TUDAO{
 
 		Mostre 'monkeys';
 
+		booleano vale 2>3;
+
 		n vale 1 * 9;
 		
-		m vale 2;
+		m vale resto(3/3 sobre 4/4);
 
 		m vale n + 4 * ( 5 * n ) / ( n + m );
 		

@@ -42,6 +42,7 @@ NADA	[Nn][Aa][Dd][Aa]
 VALE	[Vv][Aa][Ll][Ee]
 
 RESTO   [Rr][Ee][Ss][Tt][Oo]
+SOBRE	[Ss][Oo][Bb][Rr][Ee]
 
 CTE_SIMBOLO "'"([^'\n]|"''")"'"
 CTE_PALAVRA	"'"([^'\n]|"''")*"'"
@@ -93,7 +94,8 @@ CTE_NUMEROGRANDECOMPONTO {REAL}
 
 {VALE}		{ trata_folha(); return _ATRIB; }
 
-{RESTO}		{  trata_folha(); return _RESTO; }
+{RESTO}		{  trata_folha(); yylval.v = '%'; return _RESTO; }
+{SOBRE}		{ trata_folha(); return _SOBRE; }
 
 {ID}	{  trata_folha(); return _ID; }
 

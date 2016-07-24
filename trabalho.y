@@ -170,7 +170,7 @@ string declara_var_temp( map< string, int >& temp ) {
 
 %token _CTE_PALAVRA _CTE_NUMEROSEMPONTO _CTE_NUMEROCOMPONTO _CTE_NUMEROGRANDECOMPONTO _CTE_SIMBOLO
 
-%token _RESTO
+%token _RESTO _SOBRE
 
 %nonassoc '>' '<' '=' ">=" "<="
 %left _RESTO
@@ -325,12 +325,12 @@ E : E '+' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E '-' E { gera_codigo_operador( $$, $1, $2, $3 ); }     
   | E '*' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E '/' E { gera_codigo_operador( $$, $1, $2, $3 ); }
-  | E '>' E 
-  | E '<' E 
-  | E "<=" E
-  | E ">=" E
-  | _RESTO '(' E '/' E ')' 
-  | E '=' E 
+  | E '>' E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  | E '<' E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  | E "<=" E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  | E ">=" E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  | _RESTO '(' E _SOBRE E ')' { gera_codigo_operador( $$, $3, $1, $5 ); }
+  | E '=' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | F
   ;
   
@@ -365,7 +365,9 @@ void inicializa_tabela_de_resultado_de_operacoes() {
   
     map< string, Tipo > r;
 
-    r[par(Integer, Integer)] = Integer;    
+	r[par(Integer, Integer)] = Integer;    
+	tiporesultado[ "%" ] = r; 
+    
     r[par(Integer, Float)] = Float;    
     r[par(Integer, Double)] = Double;    
     r[par(Float, Integer)] = Float;    
@@ -383,7 +385,25 @@ void inicializa_tabela_de_resultado_de_operacoes() {
     r[par(String, Char)] = String;      
     r[par(Char, String)] = String;    
     r[par(String, String)] = String;    
-    tiporesultado[ "+" ] = r; 
+    tiporesultado[ "+" ] = r;
+
+	r.clear();
+	r[par(Integer, Integer)] = Boolean; 
+	r[par(Float, Float)] = Boolean;    
+	r[par(Float, Double)] = Boolean;    
+	r[par(Double, Float)] = Boolean;    
+	r[par(Double, Double)] = Boolean;    
+	r[par(Char, Char)] = Boolean;      
+	r[par(String, Char)] = Boolean;      
+	r[par(Char, String)] = Boolean;    
+	r[par(String, String)] = Boolean;    
+	r[par(Boolean, Boolean)] = Boolean;    
+	tiporesultado["="] = r;
+	tiporesultado["!="] = r;
+	tiporesultado[">="] = r;
+	tiporesultado[">"] = r;
+	tiporesultado["<"] = r;
+	tiporesultado["<="] = r;
 }
 
 void inicializa_tamanho_String() {
