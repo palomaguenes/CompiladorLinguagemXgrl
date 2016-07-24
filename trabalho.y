@@ -12,13 +12,14 @@ struct Tipo {
   string nome;  // nome na nossa linguagem
   string decl;  // declaração correspondente em c-assembly
   string fmt;   // formato para "printf"
+	int dim;
 };
 
 Tipo Integer = { "numerosemponto", "int", "d" };
 Tipo Float =   { "numerocomponto", "float", "f" };
 Tipo Double =  { "numerograndecomponto", "double", "lf" };
 Tipo Boolean = { "vouf", "int", "d" };
-Tipo String =  { "palavra", "char[256]", "s" };
+Tipo String =  { "palavra", "char", "s" };
 Tipo Char =    { "simbolo", "char", "c" };
 
 struct Atributo {
@@ -49,6 +50,14 @@ string toString( int n ) {
   return buf;
 }
 
+int toInt( string valor ) {
+  int aux = 0;
+  
+  sscanf( valor.c_str(), "%d", &aux );
+  
+  return aux;
+}
+
 string gera_nome_var( Tipo t ) {
   return "t_" + t.nome + "_" + 
    toString( ++(escopo_local ? temp_local : temp_global)[t.nome] );
@@ -64,15 +73,26 @@ ostream& operator << ( ostream& o, const vector<string>& st ) {
   return o;     
 }
 
+
+string trata_dimensoes_decl_var( Tipo t ) {
+  string aux;
+  
+  if (t.dim != 0)
+  		aux += "[" + toString(t.dim) + "]";
+           
+  return aux;
+}
+
 void declara_variavel( Atributo& ss, 
                        const Atributo& s1, const Atributo& s3 ) {
   ss.c = "";
   for( int i = 0; i < s1.lst.size(); i++ ) {
     if( ts.find( s1.lst[i] ) != ts.end() ) 
-      erro( "Você já declarou a variável " + s1.lst[i] );
+      erro( "Variável já declarada: " + s1.lst[i] );
     else {
       ts[ s1.lst[i] ] = s3.t; 
-      ss.c += s3.t.decl + " " + s1.lst[i] + ";\n"; 
+      ss.c += s3.t.decl + " " + s1.lst[i] 
+              + trata_dimensoes_decl_var( s3.t ) + ";\n"; 
     }  
   }
 }
@@ -208,14 +228,15 @@ IDS : IDS '&' _ID { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
 
 TIPO : _NUMEROSEMPONTO		{ $$.t = Integer; }
      | _NUMEROCOMPONTO		{ $$.t = Float; }
-	 | _NUMEROGRANDECOMPONTO { $$.t = Double; }
-     | _PALAVRA TAM_PALAVRA
-	 | _SIMBOLO			{ $$.t = Char; }
-	 | _VOUF			{ $$.t = Boolean; }
+     | _NUMEROGRANDECOMPONTO { $$.t = Double; }
+     | _PALAVRA TAM_PALAVRA	{ $$.t = $2.t; }
+     | _SIMBOLO			{ $$.t = Char; }
+     | _VOUF			{ $$.t = Boolean; }
      ;
 
 TAM_PALAVRA: '[' _CTE_NUMEROSEMPONTO ']'
-           |
+							{ $$.t = String; $$.t.dim = toInt( $2.v ); }
+           |	{ $$.t = String; }
            ; 
 
   
@@ -230,10 +251,10 @@ MIOLO : CHAMADAFUNCAO
       ;              
 
 CHAMADAFUNCAO: _ID '(' PARAM_CHAMADA ')' ';'
-	     ;     
+             ;     
 
 PARAM_CHAMADA: FS
-	     ;
+	         ;
 
 FS: F ',' FS
   | F
@@ -242,11 +263,11 @@ FS: F ',' FS
 
 CMD : MOSTRE
     | CMD_SE
-	| CMD_ATRIB
-	| CMD_FOR
-	| CMD_WHILE
-	| CMD_DOWHILE
-	| CMD_ESCOLHA
+		| CMD_ATRIB
+		| CMD_FOR
+		| CMD_WHILE
+		| CMD_DOWHILE
+		| CMD_ESCOLHA
     ; 
 
 CMD_ESCOLHA : _ESCOLHA F '{' ESCOLHAS '}'
@@ -270,7 +291,7 @@ MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t.fmt + "\\n\", " + $2.v + " 
 
 CMD_ATRIB : IDATR INDICE _ATRIB E ';'
 			      { gera_codigo_atribuicao( $$, $1, $4); }
-	  	    | IDATR INDICE _ATRIB CHAMADAFUNCAO
+	  	   | IDATR INDICE _ATRIB CHAMADAFUNCAO
           ;
 
 CMD_ATRIB_SPV : _ID INDICE _ATRIB E
@@ -365,9 +386,16 @@ void inicializa_tabela_de_resultado_de_operacoes() {
     tiporesultado[ "+" ] = r; 
 }
 
+void inicializa_tamanho_String() {
+  
+	int tamanho = 256;  
+  String.dim = tamanho;
+}
+
 
 int main( int argc, char* argv[] )
 {
+	inicializa_tamanho_String();
   inicializa_tabela_de_resultado_de_operacoes();
   yyparse();
 }

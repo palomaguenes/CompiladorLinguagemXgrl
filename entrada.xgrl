@@ -1,6 +1,8 @@
 TUDAO{
 	usandoisso{
 		booleano: vouf;
+		a: palavra[15];
+		b: palavra;
 		m & n: numerosemponto;
 		x & l: numerocomponto;
 		d : numerograndecomponto;
@@ -13,7 +15,7 @@ TUDAO{
 	funcao nomedafuncao recebe(){
 
 		usandoisso{
-			a: palavra;
+			ad: palavra;
 		}
 	
 		executeisso {
