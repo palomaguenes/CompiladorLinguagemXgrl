@@ -168,7 +168,7 @@ string declara_nvar_temp( Tipo t, int qtde ) {
 }
 
 string declara_var_temp( map< string, int >& temp ) {
-  string decls = "// variáveis temporárias \n" + 
+  string decls = 
     declara_nvar_temp( Integer, temp[Integer.nome] ) +
     declara_nvar_temp( Float, temp[Float.nome] ) +
     declara_nvar_temp( Double, temp[Double.nome] ) +
@@ -472,7 +472,7 @@ void inicializa_tabela_de_resultado_de_operacoes() {
 	r[par(Char, String)] = Boolean;    
 	r[par(String, String)] = Boolean;    
 	r[par(Boolean, Boolean)] = Boolean;    
-	tiporesultado["="] = r;
+	tiporesultado["=="] = r;
 	tiporesultado["!="] = r;
 	tiporesultado[">="] = r;
 	tiporesultado[">"] = r;

@@ -93,6 +93,7 @@ CTE_NUMEROGRANDECOMPONTO {REAL}
 {CTE_NUMEROGRANDECOMPONTO} 	{ trata_folha(); return _CTE_NUMEROGRANDECOMPONTO; }
 
 {VALE}		{ trata_folha(); return _ATRIB; }
+"=" 		{ trata_folha(); yylval.v = "=="; return '='; }
 
 {RESTO}		{  trata_folha(); yylval.v = '%'; return _RESTO; }
 {SOBRE}		{ trata_folha(); return _SOBRE; }
