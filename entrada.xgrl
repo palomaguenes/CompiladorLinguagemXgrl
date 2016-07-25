@@ -30,6 +30,12 @@ TUDAO{
 		Mostre 'monkeys';
 
 		booleano vale 2>3;
+		
+		Mostre booleano;
+
+		booleano vale NAO(booleano);
+
+		mostre booleano;
 
 		n vale -1;
 		
@@ -41,7 +47,7 @@ TUDAO{
 			mostre 'oi';
 		}
 
-		se (m > n) ehverdade{
+		se (NAO(m > n)) ehverdade{
 			mostre 'hello';
 		}ehmentira{
 			mostre 'ola';

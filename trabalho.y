@@ -143,9 +143,10 @@ void gera_codigo_operador( Atributo& ss,  const Atributo& s1, const Atributo& s2
 
 void gera_codigo_operador_unario( Atributo& ss, const Atributo& op, const Atributo& value){
 	
-	if( (op.v == "+" || op.v == "-") && ( value.t.nome == "numerosemponto" 
+	if( (op.v == "!" && value.t.nome == "vouf") ||  
+		((op.v == "+" || op.v == "-") && ( value.t.nome == "numerosemponto" 
 											|| value.t.nome == "numerocomponto"
-											|| value.t.nome == "numerograndecomponto" ) ){
+											|| value.t.nome == "numerograndecomponto" )) ){
 		string temp1 = gera_nome_var(value.t);
 		ss.c = value.c + "  " +  temp1 + " = " + op.v + value.v + ";\n";
 		ss.v = temp1;
@@ -248,7 +249,7 @@ void gera_cmd_execute_repita(Atributo& ss, const Atributo& exp, const Atributo& 
 %}
 
 %token _ID _TUDAO _USANDOISSO _EXECUTEISSO _SE _EHVERDADE _EHMENTIRA 
-%token _MOSTRE _ATRIB _COM _FACA _ENQUANTO _REPITA _EXECUTE 
+%token _MOSTRE _VALE _COM _FACA _ENQUANTO _REPITA _EXECUTE 
 %token _NUMEROSEMPONTO _PALAVRA _NUMEROCOMPONTO _NUMEROGRANDECOMPONTO _SIMBOLO _VOUF
 %token _ESCOLHA _SEFOR _OK _CASOCONTRARIO
 %token _FUNCAO _RECEBE _RETORNA _NADA
@@ -257,6 +258,11 @@ void gera_cmd_execute_repita(Atributo& ss, const Atributo& exp, const Atributo& 
 
 %token _RESTO _SOBRE
 
+%token _OU _E _NAO
+
+%left _OU
+%left _E
+%left _NAO
 %nonassoc '>' '<' '=' ">=" "<="
 %left _RESTO
 %left '+' '-'
@@ -380,12 +386,12 @@ CASOCONTRARIO : _CASOCONTRARIO ':' MIOLOS
 MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t.fmt + "\\n\", " + $2.v + " );\n"; }
       ; 
 
-CMD_ATRIB : IDATR INDICE _ATRIB E ';'
+CMD_ATRIB : IDATR INDICE _VALE E ';'
 			      { gera_codigo_atribuicao( $$, $1, $4); }
-	  	   | IDATR INDICE _ATRIB CHAMADAFUNCAO
+	  	   | IDATR INDICE _VALE CHAMADAFUNCAO
           ;
 
-CMD_ATRIB_SPV : _ID INDICE _ATRIB E
+CMD_ATRIB_SPV : _ID INDICE _VALE E
      				  ;
 
 IDATR: _ID { busca_tipo_da_variavel( $$, $1 ); }	
@@ -424,10 +430,13 @@ E : E '+' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E '<' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E "<=" E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E ">=" E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  |	E _E E   { gera_codigo_operador( $$, $1, $2, $3); }
+  | E _OU E  { gera_codigo_operador( $$, $1, $2, $3); }
   | _RESTO '(' E _SOBRE E ')' { gera_codigo_operador( $$, $3, $1, $5 ); }
   | E '=' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   |	'+' E	{ gera_codigo_operador_unario( $$, $1, $2 );}
   |	'-' E	{ gera_codigo_operador_unario( $$, $1, $2 );}
+  | _NAO E	{ gera_codigo_operador_unario( $$, $1, $2 );}
   | F
   ;
   
@@ -501,6 +510,12 @@ void inicializa_tabela_de_resultado_de_operacoes() {
 	tiporesultado[">"] = r;
 	tiporesultado["<"] = r;
 	tiporesultado["<="] = r;
+
+	r.clear();
+	r[par(Boolean, Boolean)] = Boolean;
+	tiporesultado["&&"];
+	tiporesultado["||"];
+
 }
 
 void inicializa_tamanho_String() {

@@ -41,6 +41,10 @@ NADA	[Nn][Aa][Dd][Aa]
 
 VALE	[Vv][Aa][Ll][Ee]
 
+OU		[Oo]
+E		[Ee]
+NAO		[Nn][Aa][Oo]
+
 RESTO   [Rr][Ee][Ss][Tt][Oo]
 SOBRE	[Ss][Oo][Bb][Rr][Ee]
 
@@ -92,8 +96,12 @@ CTE_NUMEROGRANDECOMPONTO {REAL}
 {CTE_NUMEROCOMPONTO} 		{ trata_folha(); return _CTE_NUMEROCOMPONTO; }
 {CTE_NUMEROGRANDECOMPONTO} 	{ trata_folha(); return _CTE_NUMEROGRANDECOMPONTO; }
 
-{VALE}		{ trata_folha(); return _ATRIB; }
+{VALE}		{ trata_folha(); return _VALE; }
+
 "=" 		{ trata_folha(); yylval.v = "=="; return '='; }
+{OU}		{ trata_folha(); yylval.v = "||"; return _OU; }
+{E}			{ trata_folha(); yylval.v = "&&"; return _E; }
+{NAO}		{ trata_folha(); yylval.v = "!";return _NAO; }
 
 {RESTO}		{  trata_folha(); yylval.v = '%'; return _RESTO; }
 {SOBRE}		{ trata_folha(); return _SOBRE; }
