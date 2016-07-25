@@ -221,9 +221,9 @@ void gera_cmd_repita(Atributo& ss, const Atributo& exp, const Atributo& cmd){
 	if( exp.t.nome != Boolean.nome )
     	erro( "A expressão do WHILE deve ser booleana!" );
 
-	ss.c = exp.c +
+	ss.c = "\n" + lbl_repita + ":;\n" +
+			exp.c +
           	"  "+ exp.v + "= !" + exp.v + ";\n" +
-			"\n" + lbl_repita + ":;\n" +
 			"if ( "+ exp.v + " ) goto "+ lbl_fim_repita  + ";\n" +
 			cmd.c +
 			"  goto " + lbl_repita + ";\n\n"+

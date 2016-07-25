@@ -51,8 +51,11 @@ TUDAO{
 			Mostre 'monkeys';
 		}
 
-		repita se (4<5){
+		m vale 3;
+
+		repita se (m<5){
 			mostre 'bananas';
+			m vale m+1;
 		}
 
 		x vale 9.77 + 2.1;
