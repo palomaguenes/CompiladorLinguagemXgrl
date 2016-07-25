@@ -3,7 +3,7 @@ TUDAO{
 		booleano: vouf;
 		a: palavra[15];
 		b: palavra;
-		m & n: numerosemponto;
+		m & n & j: numerosemponto;
 		x & l: numerocomponto;
 		d : numerograndecomponto;
 	}
@@ -31,11 +31,13 @@ TUDAO{
 
 		booleano vale 2>3;
 
-		n vale 1 * 9;
+		n vale 1;
 		
 		m vale resto(3/3 sobre 4/4);
 
-		m vale n + 4 * ( 5 * n ) / ( n + m );
+		m vale n + 4 / ( n + m );
+
+		j vale -1;
 		
 		se (m = n) ehverdade{
 			mostre 'oi';

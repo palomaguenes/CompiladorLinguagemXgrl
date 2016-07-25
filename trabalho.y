@@ -136,6 +136,23 @@ void gera_codigo_operador( Atributo& ss,  const Atributo& s1, const Atributo& s2
     erro( "Operador '" + s2.v + "' não definido." );
 }
 
+void gera_codigo_operador_unario( Atributo& ss, const Atributo& op, const Atributo& value){
+	
+	if( (op.v == "+" || op.v == "-") && ( value.t.nome == "numerosemponto" 
+											|| value.t.nome == "numerocomponto"
+											|| value.t.nome == "numerograndecomponto" ) ){
+		string temp1 = gera_nome_var(value.t);
+		ss.c = value.c + "  " +  temp1 + " = " + op.v + value.v + ";\n";
+		ss.v = temp1;
+		ss.t = value.t;
+	}
+	else{
+		erro("Não é possível utilizar operador unário: "+op.v+" com: "+value.t.nome);
+	}
+
+}
+
+
 string declara_nvar_temp( Tipo t, int qtde ) {
   string aux = "";
    
@@ -331,6 +348,8 @@ E : E '+' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E ">=" E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | _RESTO '(' E _SOBRE E ')' { gera_codigo_operador( $$, $3, $1, $5 ); }
   | E '=' E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  |	'+' E	{ gera_codigo_operador_unario( $$, $1, $2 );}
+  |	'-' E	{ gera_codigo_operador_unario( $$, $1, $2 );}
   | F
   ;
   
