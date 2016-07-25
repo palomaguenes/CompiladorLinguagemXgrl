@@ -58,6 +58,10 @@ TUDAO{
 			m vale m+1;
 		}
 
+		execute{
+			mostre 'prato'; 
+		}repita se (m < 5);
+
 		x vale 9.77 + 2.1;
 		
 		escolha n {

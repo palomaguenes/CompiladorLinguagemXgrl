@@ -187,7 +187,7 @@ void gera_cmd_se(Atributo& ss, const Atributo& exp, const Atributo& cmd){
   string lbl_fim_se = gera_nome_label( "fim_se" );
   
   if( exp.t.nome != Boolean.nome )
-    erro( "A expressão do IF deve ser booleana!" );
+    erro( "A expressão do SE deve ser booleana!" );
     
   ss.c = exp.c + 
 		"  "+ exp.v + "= !" + exp.v + ";\n" +
@@ -203,7 +203,7 @@ void gera_cmd_se_mentira( Atributo& ss, const Atributo& exp, const Atributo& cmd
   string lbl_fim_se = gera_nome_label( "fim_se" );
   
   if( exp.t.nome != Boolean.nome )
-    erro( "A expressão do IF deve ser booleana!" );
+    erro( "A expressão do SE deve ser booleana!" );
     
   ss.c = exp.c + 
          "\nif( " + exp.v + " ) goto " + lbl_ehverdade + ";\n" +
@@ -219,7 +219,7 @@ void gera_cmd_repita(Atributo& ss, const Atributo& exp, const Atributo& cmd){
 	string lbl_fim_repita = gera_nome_label("fim_repita");
 
 	if( exp.t.nome != Boolean.nome )
-    	erro( "A expressão do WHILE deve ser booleana!" );
+    	erro( "A expressão do REPITA deve ser booleana!" );
 
 	ss.c = "\n" + lbl_repita + ":;\n" +
 			exp.c +
@@ -228,6 +228,20 @@ void gera_cmd_repita(Atributo& ss, const Atributo& exp, const Atributo& cmd){
 			cmd.c +
 			"  goto " + lbl_repita + ";\n\n"+
 			lbl_fim_repita + ":;\n\n";	
+
+}
+
+void gera_cmd_execute_repita(Atributo& ss, const Atributo& exp, const Atributo& cmd){
+
+	string lbl_execute = gera_nome_label("execute");
+
+	if( exp.t.nome != Boolean.nome )
+    	erro( "A expressão do EXECUTE/REPITA deve ser booleana!" );
+
+	ss.c = "\n" + lbl_execute + ":;\n" +
+			cmd.c + 
+			exp.c +
+			"if ( "+ exp.v + " ) goto "+ lbl_execute + ";\n";
 
 }
 
@@ -399,6 +413,7 @@ CMD_WHILE : _REPITA _SE '(' E ')' '{' CMDS '}'
 		  ;
 
 CMD_DOWHILE : _EXECUTE '{' CMDS '}' _REPITA _SE '(' E ')' ';'
+			 { gera_cmd_execute_repita( $$, $8, $3 ); }
 			;
 
 E : E '+' E { gera_codigo_operador( $$, $1, $2, $3 ); }
