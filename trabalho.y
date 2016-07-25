@@ -21,7 +21,7 @@ Tipo Double =  { "numerograndecomponto", "double", "lf" };
 Tipo Boolean = { "vouf", "int", "d" };
 Tipo String =  { "palavra", "char", "s" };
 Tipo Char =    { "simbolo", "char", "c" };
-
+Tipo Void = 	{"void"};
 struct Atributo {
   string v, c;
   Tipo t;
@@ -35,8 +35,9 @@ int yyparse();
 void yyerror(const char *);
 void erro( string );
 
-map<string,Tipo> ts;
+vector< map<string,Tipo> > ts;
 map< string, map< string, Tipo > > tiporesultado;
+map<string,Tipo> tf;
 
 map< string, int > temp_global;
 map< string, int > temp_local;
@@ -58,6 +59,15 @@ int toInt( string valor ) {
   
   return aux;
 }
+
+void empilha_nova_tabela_de_simbolos() {
+  ts.push_back( map< string, Tipo >() );
+}
+
+void desempilha_tabela_de_simbolos() {
+  ts.pop_back();
+}
+
 
 string gera_nome_var( Tipo t ) {
   return "t_" + t.nome + "_" + 
@@ -88,19 +98,28 @@ string trata_dimensoes_decl_var( Tipo t ) {
   return aux;
 }
 
+// 'Atributo&': o '&' significa passar por referência (modifica).
 void declara_variavel( Atributo& ss, 
-                       const Atributo& s1, const Atributo& s3 ) {
+                       vector<string> lst, 
+                       Tipo tipo ) {
   ss.c = "";
-  for( int i = 0; i < s1.lst.size(); i++ ) {
-    if( ts.find( s1.lst[i] ) != ts.end() ) 
-      erro( "Variável já declarada: " + s1.lst[i] );
+  for( int i = 0; i < lst.size(); i++ ) {
+    if( ts[ts.size()-1].find( lst[i] ) != ts[ts.size()-1].end() ) 
+      erro( "Variável já declarada: " + lst[i] );
     else {
-      ts[ s1.lst[i] ] = s3.t; 
-      ss.c += s3.t.decl + " " + s1.lst[i] 
-              + trata_dimensoes_decl_var( s3.t ) + ";\n"; 
+      ts[ts.size()-1][ lst[i] ] = tipo; 
+      ss.c += tipo.decl + " " + lst[i] 
+              + trata_dimensoes_decl_var( tipo ) + ";\n"; 
     }  
   }
-}	
+}
+
+void declara_variavel( Atributo& ss, string nome, Tipo tipo ) {
+  vector<string> lst;
+  lst.push_back( nome );
+  declara_variavel( ss, lst, tipo );
+}
+	
 
 void gera_codigo_atribuicao( Atributo& ss, 
                              const Atributo& s1, 
@@ -111,10 +130,10 @@ void gera_codigo_atribuicao( Atributo& ss,
 }
 
 void busca_tipo_da_variavel( Atributo& ss, const Atributo& s1 ) {
-  if( ts.find( s1.v ) == ts.end() )
+  if( ts[ts.size()-1].find( s1.v ) == ts[ts.size()-1].end() )
         erro( "Variável não declarada: " + s1.v );
   else {
-    ss.t = ts[ s1.v ];
+    ss.t = ts[ts.size()-1][ s1.v ];
     ss.v = s1.v;
   }
 }
@@ -266,6 +285,36 @@ void gera_cmd_com(Atributo& ss, const Atributo& atr1, const Atributo& atr2, cons
 
 }
 
+
+void gera_codigo_funcao( Atributo& ss, 
+                         string retorno, 
+                         string nome, 
+                         string params,
+                         const Atributo& vars,
+                         const Atributo&  codigo ) {
+  if(retorno != Void.nome){
+	  ss.c = retorno + " " + nome + "( " + params + " )" + 
+		     "{\n" +
+		     retorno +
+		     declara_var_temp( temp_local ) + 
+		     vars.c +
+		     codigo.c +
+		     "return Result;\n}\n";
+   }
+   if(retorno == Void.nome){
+	  ss.c = "void " + nome + "( " + params + " )" + 
+		     "{\n" +
+		     declara_var_temp( temp_local ) + 
+		     vars.c +
+		     codigo.c +
+		     "\n}\n";
+   }
+         
+         
+} 
+
+    
+
 %}
 
 %token _ID _TUDAO _USANDOISSO _EXECUTEISSO _SE _EHVERDADE _EHMENTIRA 
@@ -312,8 +361,22 @@ FUNCTIONDECLS : FUNCTIONDECL FUNCTIONDECLS
 			  |
 			  ;
 
-FUNCTIONDECL : _FUNCAO _ID _RECEBE '(' PARAMETROS ')' _RETORNA '('_ID ':' TIPO ')' '{' USANDOISSO EXECUTEISSO'}'
-			 | _FUNCAO _ID _RECEBE '(' PARAMETROS ')' '{' USANDOISSO EXECUTEISSO'}'
+FUNCTIONDECL : _FUNCAO _ID _RECEBE { escopo_local = true; empilha_nova_tabela_de_simbolos(); } 
+				'(' PARAMETROS ')' _RETORNA '('_ID ':' TIPO ')' 
+				 { declara_variavel( $12, "Result", $12.t ); tf[$2.v] = $12.t; } 
+				'{' USANDOISSO EXECUTEISSO'}'
+				 { gera_codigo_funcao( $$, $12.c, $2.v, $6.c, $16, $17 ); 
+             		escopo_local = false;
+            		desempilha_tabela_de_simbolos(); }
+				
+			 | _FUNCAO _ID _RECEBE 
+			 { escopo_local = true; empilha_nova_tabela_de_simbolos(); } 
+			 '(' PARAMETROS ')'
+			 { tf[$2.v] = Void; } 
+			  '{' USANDOISSO EXECUTEISSO'}'
+			  { gera_codigo_funcao( $$, "void", $2.v, $6.c, $10, $11 ); 
+             		escopo_local = false;
+            		desempilha_tabela_de_simbolos(); }
 			 ;
 
 PARAMETROS : DECL ',' PARAMETROS
@@ -330,7 +393,7 @@ DECLS : DECL ';' DECLS { $$.c = $1.c + $3.c; }
       |	DECL ';'
       ;
      
-DECL : IDS ':' TIPO  { declara_variavel( $$, $1, $3 ); }     
+DECL : IDS ':' TIPO  { declara_variavel( $$, $1.lst, $3.t ); }     
      ;      
 
 IDS : IDS '&' _ID { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
@@ -551,6 +614,7 @@ int main( int argc, char* argv[] )
 {
 	inicializa_tamanho_String();
   inicializa_tabela_de_resultado_de_operacoes();
+  empilha_nova_tabela_de_simbolos();
   yyparse();
 }
 

@@ -9,10 +9,17 @@ TUDAO{
 	}
 
 	funcao nomedafuncao recebe(k: palavra, sim: simbolo, p: numerocomponto) retorna (b:palavra){
-
+		usandoisso{
+			adr: palavra;
+		}
+	
+		executeisso {
+			k vale 'funcao otima';
+			mostre k;
+		}
 	}
 	
-	funcao nomedafuncao recebe(){
+	funcao nomedafuncak recebe(simm: simbolo,  p: numerocomponto){
 
 		usandoisso{
 			ad: palavra;
@@ -39,7 +46,7 @@ TUDAO{
 
 		n vale -1;
 		
-		m vale resto(3/3 sobre 4/4);
+		m vale resto(3/3/3/3 sobre 4/4);
 
 		m vale n + 4 / ( n + m );
 
