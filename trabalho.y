@@ -190,7 +190,8 @@ void gera_cmd_se(Atributo& ss, const Atributo& exp, const Atributo& cmd){
     erro( "A expressão do IF deve ser booleana!" );
     
   ss.c = exp.c + 
-         "\nif( " + "!" + exp.v + " ) goto " + lbl_fim_se + ";\n" +
+		"  "+ exp.v + "= !" + exp.v + ";\n" +
+         "\nif( " + exp.v + " ) goto " + lbl_fim_se + ";\n" +
          cmd.c + "\n" +
          lbl_fim_se + ":;\n\n";
 
@@ -221,8 +222,9 @@ void gera_cmd_repita(Atributo& ss, const Atributo& exp, const Atributo& cmd){
     	erro( "A expressão do WHILE deve ser booleana!" );
 
 	ss.c = exp.c +
+          	"  "+ exp.v + "= !" + exp.v + ";\n" +
 			"\n" + lbl_repita + ":;\n" +
-			"if ( !"+ exp.v + " ) goto "+ lbl_fim_repita  + ";\n" +
+			"if ( "+ exp.v + " ) goto "+ lbl_fim_repita  + ";\n" +
 			cmd.c +
 			"  goto " + lbl_repita + ";\n\n"+
 			lbl_fim_repita + ":;\n\n";	
