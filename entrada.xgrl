@@ -53,8 +53,9 @@ TUDAO{
 			mostre 'ola';
 		}
 
-		com (y vale 5) faca (m vale 1+1) enquanto (m > 5){
-			Mostre 'monkeys';
+		com (m vale 1) faca (m vale m+1) enquanto (m < 5){
+			Mostre m;
+			Mostre 'for';
 		}
 
 		m vale 3;

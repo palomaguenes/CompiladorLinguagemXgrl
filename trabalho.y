@@ -100,7 +100,7 @@ void declara_variavel( Atributo& ss,
               + trata_dimensoes_decl_var( s3.t ) + ";\n"; 
     }  
   }
-}
+}	
 
 void gera_codigo_atribuicao( Atributo& ss, 
                              const Atributo& s1, 
@@ -243,6 +243,26 @@ void gera_cmd_execute_repita(Atributo& ss, const Atributo& exp, const Atributo& 
 			cmd.c + 
 			exp.c +
 			"if ( "+ exp.v + " ) goto "+ lbl_execute + ";\n";
+
+}
+
+void gera_cmd_com(Atributo& ss, const Atributo& atr1, const Atributo& atr2, const Atributo& exp, const Atributo& cmd){
+
+	string lbl_fim_com = gera_nome_label("fim_com");
+	string lbl_inicio_com = gera_nome_label("inicio_com");
+
+	if( exp.t.nome != Boolean.nome )
+    	erro( "A expressão do COM/FAÇA deve ser booleana!" );
+
+	ss.c = atr1.c
+			+ "\n" + lbl_inicio_com + ":;\n" +
+			exp.c +
+			"  "+ exp.v + "= !" + exp.v + ";\n" +
+			"\nif ( "+ exp.v + " ) goto " + lbl_fim_com + ";\n"+
+			cmd.c+
+			atr2.c+
+			"  goto " + lbl_inicio_com + ";\n\n"+
+			lbl_fim_com + ":;\n\n";
 
 }
 
@@ -391,8 +411,9 @@ CMD_ATRIB : IDATR INDICE _VALE E ';'
 	  	   | IDATR INDICE _VALE CHAMADAFUNCAO
           ;
 
-CMD_ATRIB_SPV : _ID INDICE _VALE E
-     				  ;
+CMD_ATRIB_SPV : IDATR INDICE _VALE E
+				{ gera_codigo_atribuicao( $$, $1, $4); }
+			  ;
 
 IDATR: _ID { busca_tipo_da_variavel( $$, $1 ); }	
 	   ;
@@ -412,6 +433,7 @@ CMD_SE : _SE '(' E ')' _EHVERDADE '{' CMDS '}'
 	   ;
 
 CMD_FOR : _COM '(' CMD_ATRIB_SPV ')' _FACA '(' CMD_ATRIB_SPV ')' _ENQUANTO '(' E ')' '{' CMDS '}'
+		{ gera_cmd_com( $$, $3, $7, $11, $14 ); }
         ;
 
 CMD_WHILE : _REPITA _SE '(' E ')' '{' CMDS '}'
