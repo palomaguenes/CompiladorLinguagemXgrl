@@ -31,14 +31,12 @@ TUDAO{
 
 		booleano vale 2>3;
 
-		n vale 1;
+		n vale -1;
 		
 		m vale resto(3/3 sobre 4/4);
 
 		m vale n + 4 / ( n + m );
 
-		j vale -1;
-		
 		se (m = n) ehverdade{
 			mostre 'oi';
 		}

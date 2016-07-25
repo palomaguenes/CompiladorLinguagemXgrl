@@ -40,6 +40,7 @@ map< string, map< string, Tipo > > tiporesultado;
 
 map< string, int > temp_global;
 map< string, int > temp_local;
+map< string, int > nlabel;
 bool escopo_local = false;
 
 string toString( int n ) {
@@ -61,6 +62,10 @@ int toInt( string valor ) {
 string gera_nome_var( Tipo t ) {
   return "t_" + t.nome + "_" + 
    toString( ++(escopo_local ? temp_local : temp_global)[t.nome] );
+}
+
+string gera_nome_label( string cmd ) {
+  return "L_" + cmd + "_" + toString( ++nlabel[cmd] );
 }
 
 ostream& operator << ( ostream& o, const vector<string>& st ) {
@@ -175,6 +180,36 @@ string declara_var_temp( map< string, int >& temp ) {
   temp.clear();
   
   return decls;
+}
+
+void gera_cmd_se(Atributo& ss, const Atributo& exp, const Atributo& cmd){
+
+  string lbl_fim_se = gera_nome_label( "fim_se" );
+  
+  if( exp.t.nome != Boolean.nome )
+    erro( "A expressão do IF deve ser booleana!" );
+    
+  ss.c = exp.c + 
+         "\nif( " + "!" + exp.v + " ) goto " + lbl_fim_se + ";\n" +
+         cmd.c + "\n" +
+         lbl_fim_se + ":;\n";
+
+}
+
+void gera_cmd_se_mentira( Atributo& ss, const Atributo& exp, const Atributo& cmd_ehverdade,  const Atributo& cmd_ehmentira ) {
+ 
+  string lbl_ehverdade = gera_nome_label( "ehverdade" );
+  string lbl_fim_se = gera_nome_label( "fim_se" );
+  
+  if( exp.t.nome != Boolean.nome )
+    erro( "A expressão do IF deve ser booleana!" );
+    
+  ss.c = exp.c + 
+         "\nif( " + exp.v + " ) goto " + lbl_ehverdade + ";\n" +
+         cmd_ehmentira.c + "  goto " + lbl_fim_se + ";\n\n" +
+         lbl_ehverdade + ":;\n" + 
+         cmd_ehverdade.c + "\n" +
+         lbl_fim_se + ":;\n"; 
 }
 
 %}
@@ -326,7 +361,9 @@ EXPS : E ',' EXPS
      ;
 
 CMD_SE : _SE '(' E ')' _EHVERDADE '{' CMD '}'
+		{ gera_cmd_se( $$, $3, $7); }
 	   | _SE '(' E ')' _EHVERDADE '{' CMD '}' _EHMENTIRA '{' CMD '}'
+		{ gera_cmd_se_mentira( $$, $3, $7, $11 ); }
 	   ;
 
 CMD_FOR : _COM '(' CMD_ATRIB_SPV ')' _FACA '(' CMD_ATRIB_SPV ')' _ENQUANTO '(' E ')' '{' CMD '}'
