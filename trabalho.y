@@ -192,7 +192,7 @@ void gera_cmd_se(Atributo& ss, const Atributo& exp, const Atributo& cmd){
   ss.c = exp.c + 
          "\nif( " + "!" + exp.v + " ) goto " + lbl_fim_se + ";\n" +
          cmd.c + "\n" +
-         lbl_fim_se + ":;\n";
+         lbl_fim_se + ":;\n\n";
 
 }
 
@@ -209,7 +209,24 @@ void gera_cmd_se_mentira( Atributo& ss, const Atributo& exp, const Atributo& cmd
          cmd_ehmentira.c + "  goto " + lbl_fim_se + ";\n\n" +
          lbl_ehverdade + ":;\n" + 
          cmd_ehverdade.c + "\n" +
-         lbl_fim_se + ":;\n"; 
+         lbl_fim_se + ":;\n\n"; 
+}
+
+void gera_cmd_repita(Atributo& ss, const Atributo& exp, const Atributo& cmd){
+
+	string lbl_repita = gera_nome_label("repita");
+	string lbl_fim_repita = gera_nome_label("fim_repita");
+
+	if( exp.t.nome != Boolean.nome )
+    	erro( "A expressão do WHILE deve ser booleana!" );
+
+	ss.c = exp.c +
+			"\n" + lbl_repita + ":;\n" +
+			"if ( !"+ exp.v + " ) goto "+ lbl_fim_repita  + ";\n" +
+			cmd.c +
+			"  goto " + lbl_repita + ";\n\n"+
+			lbl_fim_repita + ":;\n\n";	
+
 }
 
 %}
@@ -370,6 +387,7 @@ CMD_FOR : _COM '(' CMD_ATRIB_SPV ')' _FACA '(' CMD_ATRIB_SPV ')' _ENQUANTO '(' E
         ;
 
 CMD_WHILE : _REPITA _SE '(' E ')' '{' CMD '}'
+			{ gera_cmd_repita( $$, $4, $7 ); }
 		  ;
 
 CMD_DOWHILE : _EXECUTE '{' CMD '}' _REPITA _SE '(' E ')' ';'

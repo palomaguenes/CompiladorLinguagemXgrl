@@ -1,5 +1,6 @@
 all: trabalho entrada.xgrl
-	./trabalho < entrada.xgrl
+	./trabalho < entrada.xgrl > saida.cc
+	cat saida.cc
 
 lex.yy.c: trabalho.lex
 	lex trabalho.lex
