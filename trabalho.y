@@ -322,7 +322,7 @@ MIOLO : CHAMADAFUNCAO
       ;              
 
 CHAMADAFUNCAO: _ID '(' PARAM_CHAMADA ')' ';'
-             ;     
+             ;
 
 PARAM_CHAMADA: FS
 	         ;
@@ -332,13 +332,19 @@ FS: F ',' FS
   |
   ;
 
+CMDS: CMD CMDS 
+		{ $$.c = $1.c + $2.c; }
+	|
+		{ $$.c = ""; }
+	;
+
 CMD : MOSTRE
     | CMD_SE
-		| CMD_ATRIB
-		| CMD_FOR
-		| CMD_WHILE
-		| CMD_DOWHILE
-		| CMD_ESCOLHA
+	| CMD_ATRIB
+	| CMD_FOR
+	| CMD_WHILE
+	| CMD_DOWHILE
+	| CMD_ESCOLHA
     ; 
 
 CMD_ESCOLHA : _ESCOLHA F '{' ESCOLHAS '}'
@@ -379,20 +385,20 @@ EXPS : E ',' EXPS
      | E
      ;
 
-CMD_SE : _SE '(' E ')' _EHVERDADE '{' CMD '}'
+CMD_SE : _SE '(' E ')' _EHVERDADE '{' CMDS '}'
 		{ gera_cmd_se( $$, $3, $7); }
-	   | _SE '(' E ')' _EHVERDADE '{' CMD '}' _EHMENTIRA '{' CMD '}'
+	   | _SE '(' E ')' _EHVERDADE '{' CMDS '}' _EHMENTIRA '{' CMDS '}'
 		{ gera_cmd_se_mentira( $$, $3, $7, $11 ); }
 	   ;
 
-CMD_FOR : _COM '(' CMD_ATRIB_SPV ')' _FACA '(' CMD_ATRIB_SPV ')' _ENQUANTO '(' E ')' '{' CMD '}'
+CMD_FOR : _COM '(' CMD_ATRIB_SPV ')' _FACA '(' CMD_ATRIB_SPV ')' _ENQUANTO '(' E ')' '{' CMDS '}'
         ;
 
-CMD_WHILE : _REPITA _SE '(' E ')' '{' CMD '}'
+CMD_WHILE : _REPITA _SE '(' E ')' '{' CMDS '}'
 			{ gera_cmd_repita( $$, $4, $7 ); }
 		  ;
 
-CMD_DOWHILE : _EXECUTE '{' CMD '}' _REPITA _SE '(' E ')' ';'
+CMD_DOWHILE : _EXECUTE '{' CMDS '}' _REPITA _SE '(' E ')' ';'
 			;
 
 E : E '+' E { gera_codigo_operador( $$, $1, $2, $3 ); }
