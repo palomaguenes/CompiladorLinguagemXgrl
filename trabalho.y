@@ -234,35 +234,21 @@ string declara_var_temp( map< string, int >& temp ) {
   return decls;
 }
 
-void gera_cmd_se(Atributo& ss, const Atributo& exp, const Atributo& cmd){
+void gera_cmd_se(Atributo& ss, const Atributo& exp, const Atributo& cmd_ehverdade, string cmd_ehmentira){
 
-  string lbl_fim_se = gera_nome_label( "fim_se" );
-  
-  if( exp.t.nome != Boolean.nome )
-    erro( "A expressão do SE deve ser booleana!" );
-    
-  ss.c = exp.c + 
-		"  "+ exp.v + "= !" + exp.v + ";\n" +
-         "\nif( " + exp.v + " ) goto " + lbl_fim_se + ";\n" +
-         cmd.c + "\n" +
-         lbl_fim_se + ":;\n\n";
-
-}
-
-void gera_cmd_se_mentira( Atributo& ss, const Atributo& exp, const Atributo& cmd_ehverdade,  const Atributo& cmd_ehmentira ) {
- 
   string lbl_ehverdade = gera_nome_label( "ehverdade" );
   string lbl_fim_se = gera_nome_label( "fim_se" );
   
   if( exp.t.nome != Boolean.nome )
     erro( "A expressão do SE deve ser booleana!" );
-    
+
   ss.c = exp.c + 
          "\nif( " + exp.v + " ) goto " + lbl_ehverdade + ";\n" +
-         cmd_ehmentira.c + "  goto " + lbl_fim_se + ";\n\n" +
+         cmd_ehmentira + "  goto " + lbl_fim_se + ";\n\n" +
          lbl_ehverdade + ":;\n" + 
          cmd_ehverdade.c + "\n" +
-         lbl_fim_se + ":;\n\n"; 
+         lbl_fim_se + ":;\n";
+
 }
 
 void gera_cmd_repita(Atributo& ss, const Atributo& exp, const Atributo& cmd){
@@ -565,9 +551,9 @@ EXPS : E ',' EXPS
      ;
 
 CMD_SE : _SE '(' E ')' _EHVERDADE '{' CMDS '}'
-		{ gera_cmd_se( $$, $3, $7); }
+		{ gera_cmd_se( $$, $3, $7, ""); }
 	   | _SE '(' E ')' _EHVERDADE '{' CMDS '}' _EHMENTIRA '{' CMDS '}'
-		{ gera_cmd_se_mentira( $$, $3, $7, $11 ); }
+		{ gera_cmd_se( $$, $3, $7, $11.c ); }
 	   ;
 
 CMD_FOR : _COM '(' CMD_ATRIB_SPV ')' _FACA '(' CMD_ATRIB_SPV ')' _ENQUANTO '(' E ')' '{' CMDS '}'
