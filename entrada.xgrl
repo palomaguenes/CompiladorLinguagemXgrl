@@ -8,14 +8,14 @@ TUDAO{
 		d : numerograndecomponto;
 	}
 
-	funcao nomedafuncao1 recebe(p1: palavra) retorna (b:palavra){
+	funcao nomedafuncao1 recebe(b: palavra) retorna (b:palavra){
 		usandoisso{
-			adr: palavra;
+			a: palavra[15];
 		}
 	
 		executeisso {
 			
-			mostre adr;
+			mostre a;
 		}
 	}
 
@@ -29,7 +29,7 @@ TUDAO{
 	funcao nomedafuncao2 recebe(p2: simbolo,  n3: numerocomponto){
 
 		usandoisso{
-			ad: palavra;
+			ad: palavra[16];
 		}
 	
 		executeisso {

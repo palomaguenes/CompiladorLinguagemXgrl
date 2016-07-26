@@ -150,9 +150,15 @@ void declara_variavel( Atributo& ss, string nome, Tipo tipo ) {
 void gera_codigo_atribuicao( Atributo& ss, 
                              const Atributo& s1, 
                              const Atributo& s3 ) {
-  if( s1.t.nome == s3.t.nome ){
+  
+  if( s1.t.nome == s3.t.nome &&  s1.t.nome == "palavra" ) {
+    ss.c = s1.c + s3.c + "  " 
+           + "strncpy( " + s1.v + ", " + s3.v + ", " + 
+           toString( s1.t.dim) + " );\n";
+  }else if( s1.t.nome == s3.t.nome ){
     ss.c = s1.c + s3.c + "  " + s1.v + " = " + s3.v + ";\n";
   }
+
 }
 
 void busca_tipo_da_variavel( Atributo& ss, const Atributo& s1 ) {
@@ -337,14 +343,17 @@ void gera_codigo_funcao_com_retorno( Atributo& ss,
 						             const Atributo& codigo ) {
 
 	string tipo_retorno = retorno.t.decl;
+	string codigo_retorno = retorno.c;
 
-	if (retorno.t.nome == String.nome)
+	if (retorno.t.nome == String.nome){
 		tipo_retorno = "char*";
+		codigo_retorno = "char * Result;\n";
+	}
 
 	string new_params = ajeita_parametros_funcao(params);
 
 	ss.c = tipo_retorno + " " + nome + "( " + new_params + " ) {\n  " +
-			retorno.c +
+			codigo_retorno +
 			declara_var_temp( temp_local ) + "  " +
 			vars.c +
 			codigo.c +
@@ -399,10 +408,11 @@ S : TUDAO { cout << $1.c << endl; }
     
 TUDAO  : _TUDAO '{' USANDOISSO FUNCTIONDECLS EXECUTEISSO '}'
 	     { $$.c = "#include <stdlib.h>\n"
-                "#include <stdio.h>\n\n" + 
-                declara_var_temp( temp_global ) +
-                $3.c + "\n" + $4.c +
-                "int main() {\n" + $5.c + "}\n";
+                    "#include <string.h>\n"
+                    "#include <stdio.h>\n\n" + 
+                    declara_var_temp( temp_global ) +
+                    $3.c + "\n" + $4.c +
+                    "int main() {\n" + $5.c + "}\n";
        }
        ;
 
@@ -416,21 +426,29 @@ FUNCTIONDECLS : FUNCTIONDECL FUNCTIONDECLS
 				{ $$.c = ""; }
 			  ;
 
-FUNCTIONDECL : _FUNCAO _ID _RECEBE '(' PARAMETROS ')' _RETORNA '('_ID ':' TIPO ')'
-				{ escopo_local = true; empilha_nova_tabela_de_simbolos();
-					declara_variavel( $11, "Result", $11.t ); insereFuncao($2.v,$11.t); } 
+FUNCTIONDECL :	NOME_FUNCAO
+				'(' PARAMETROS ')' _RETORNA '('_ID ':' TIPO ')'
+				{ declara_variavel( $9, "Result", $9.t ); 
+					insereFuncao($1.v,$9.t); } 
 				'{' USANDOISSO EXECUTEISSO'}'
-				{ gera_codigo_funcao_com_retorno( $$, $2.v, $11, $5.c, $15, $16 ); 
+				{ gera_codigo_funcao_com_retorno( $$, $1.v, $9, $3.c, $13, $14 ); 
 					escopo_local = false;
             		desempilha_tabela_de_simbolos(); }
 				
-			 | _FUNCAO _ID _RECEBE '(' PARAMETROS ')' '{' USANDOISSO EXECUTEISSO'}'
-				{ escopo_local = true; empilha_nova_tabela_de_simbolos(); 
-					insereFuncao($2.v, Void);
-					gera_codigo_funcao_sem_retorno( $$, $2.v, $5.c, $8, $9 ); 
+			 |	NOME_FUNCAO				
+				'(' PARAMETROS ')' '{' USANDOISSO EXECUTEISSO'}' 
+				 { insereFuncao($1.v, Void);
+					gera_codigo_funcao_sem_retorno( $$, $1.v, $3.c, $6, $7 ); 
 					escopo_local = false;
 					desempilha_tabela_de_simbolos(); }
 			 ;
+
+NOME_FUNCAO : _FUNCAO _ID _RECEBE 
+				{ escopo_local = true; 
+					empilha_nova_tabela_de_simbolos();
+					$$.v = $2.v;}
+			;
+
 
 PARAMETROS : DECL ',' PARAMETROS 
 			{ $$.c = $1.c + $3.c; }
@@ -662,15 +680,15 @@ void inicializa_tabela_de_resultado_de_operacoes() {
 void inicializa_tamanho_String() {
   
 	int tamanho = 256;  
-  String.dim = tamanho;
+  	String.dim = tamanho;
 }
 
 
 int main( int argc, char* argv[] )
 {
 	inicializa_tamanho_String();
-  inicializa_tabela_de_resultado_de_operacoes();
-  empilha_nova_tabela_de_simbolos();
-  yyparse();
+  	inicializa_tabela_de_resultado_de_operacoes();
+  	empilha_nova_tabela_de_simbolos();
+  	yyparse();
 }
 
