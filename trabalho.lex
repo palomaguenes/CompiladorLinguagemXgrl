@@ -41,7 +41,7 @@ NADA	[Nn][Aa][Dd][Aa]
 
 VALE	[Vv][Aa][Ll][Ee]
 
-OU		[Oo]
+OU		[Oo][Uu]
 E		[Ee]
 NAO		[Nn][Aa][Oo]
 

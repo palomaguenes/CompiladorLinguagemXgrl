@@ -57,7 +57,7 @@ TUDAO{
 
 		m vale n + 4 / ( n + m );
 
-		se (m = n) ehverdade{
+		se ((1 = 1) ou (2 =1)) ehverdade{
 			mostre 'oi';
 		}
 

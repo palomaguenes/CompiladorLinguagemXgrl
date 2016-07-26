@@ -672,8 +672,8 @@ void inicializa_tabela_de_resultado_de_operacoes() {
 
 	r.clear();
 	r[par(Boolean, Boolean)] = Boolean;
-	tiporesultado["&&"];
-	tiporesultado["||"];
+	tiporesultado["&&"] = r;
+	tiporesultado["||"] = r;
 
 }
 
