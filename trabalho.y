@@ -22,7 +22,7 @@ Tipo Double =	{ "numerograndecomponto", "double", "lf" };
 Tipo Boolean =	{ "vouf", "int", "d" };
 Tipo String =	{ "palavra", "char", "s" };
 Tipo Char = 	{ "simbolo", "char", "c" };
-Tipo Void = 	{"void"};
+Tipo Void = 	{"vazio", "void"};
 
 struct Atributo {
   string v, c;
@@ -38,8 +38,9 @@ void yyerror(const char *);
 void erro( string );
 
 vector< map<string,Tipo> > ts;
+map<string, vector<Tipo> > tf; 
+
 map< string, map< string, Tipo > > tiporesultado;
-map<string,Tipo> tf;
 
 map< string, int > temp_global;
 map< string, int > temp_local;
@@ -60,6 +61,29 @@ int toInt( string valor ) {
   sscanf( valor.c_str(), "%d", &aux );
   
   return aux;
+}
+
+void insereFuncao(string nome, Tipo retorno){
+
+	vector<Tipo> v;
+
+	if ( tf.find( nome ) != tf.end() ){
+		
+		v = tf[nome];
+		for (int i = 0; i < v.size(); i++){
+			if ( v[i].nome == retorno.nome){
+				erro("A função de nome '"+ nome +"' com retorno '"+ retorno.nome +"' já existe!");			
+			}
+		}
+
+		v.push_back(retorno);
+	}
+	else{
+
+		v.push_back(retorno);
+		tf[nome] = v;
+	}
+
 }
 
 void empilha_nova_tabela_de_simbolos() {
@@ -394,7 +418,7 @@ FUNCTIONDECLS : FUNCTIONDECL FUNCTIONDECLS
 
 FUNCTIONDECL : _FUNCAO _ID _RECEBE '(' PARAMETROS ')' _RETORNA '('_ID ':' TIPO ')'
 				{ escopo_local = true; empilha_nova_tabela_de_simbolos();
-					declara_variavel( $11, "Result", $11.t ); tf[$2.v] = $11.t; } 
+					declara_variavel( $11, "Result", $11.t ); insereFuncao($2.v,$11.t); } 
 				'{' USANDOISSO EXECUTEISSO'}'
 				{ gera_codigo_funcao_com_retorno( $$, $2.v, $11, $5.c, $15, $16 ); 
 					escopo_local = false;
@@ -402,7 +426,7 @@ FUNCTIONDECL : _FUNCAO _ID _RECEBE '(' PARAMETROS ')' _RETORNA '('_ID ':' TIPO '
 				
 			 | _FUNCAO _ID _RECEBE '(' PARAMETROS ')' '{' USANDOISSO EXECUTEISSO'}'
 				{ escopo_local = true; empilha_nova_tabela_de_simbolos(); 
-					tf[$2.v] = Void; 
+					insereFuncao($2.v, Void);
 					gera_codigo_funcao_sem_retorno( $$, $2.v, $5.c, $8, $9 ); 
 					escopo_local = false;
 					desempilha_tabela_de_simbolos(); }

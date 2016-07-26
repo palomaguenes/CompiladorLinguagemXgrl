@@ -8,33 +8,33 @@ TUDAO{
 		d : numerograndecomponto;
 	}
 
-	funcao nomedafuncao recebe(p1: palavra) retorna (b:palavra){
+	funcao nomedafuncao1 recebe(p1: palavra) retorna (b:palavra){
 		usandoisso{
 			adr: palavra;
 		}
 	
 		executeisso {
 			
-			mostre a;
+			mostre adr;
 		}
 	}
 
-	funcao nomedafuncam recebe(){
+	funcao nomedafuncao recebe(pp: palavra){
 		
 		executeisso {
 			mostre 'patinhos';
 		}
 	}
 	
-	funcao nomedafuncak recebe(p1: simbolo,  n3: numerocomponto) 	{
+	funcao nomedafuncao2 recebe(p2: simbolo,  n3: numerocomponto){
 
 		usandoisso{
 			ad: palavra;
 		}
 	
 		executeisso {
-			a vale 'funcao otima';
-			mostre a;
+			ad vale 'funcao otima';
+			mostre ad;
 		}
 
 	}	
