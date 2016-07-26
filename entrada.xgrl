@@ -8,7 +8,7 @@ TUDAO{
 		d : numerograndecomponto;
 	}
 
-	funcao nomedafuncao1 recebe(b: palavra) retorna (b:palavra){
+	funcao nomedafuncao1 recebe(b: palavra) retorna (c:simbolo){
 		usandoisso{
 			a: palavra[15];
 		}

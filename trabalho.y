@@ -338,6 +338,7 @@ string ajeita_parametros_funcao(string params){
 void gera_codigo_funcao_com_retorno( Atributo& ss,
 						             string nome,
 									 const Atributo& retorno,
+									 string var_retorno,
 						             string params,
 						             const Atributo& vars,
 						             const Atributo& codigo ) {
@@ -347,7 +348,7 @@ void gera_codigo_funcao_com_retorno( Atributo& ss,
 
 	if (retorno.t.nome == String.nome){
 		tipo_retorno = "char*";
-		codigo_retorno = "char * Result;\n";
+		codigo_retorno = tipo_retorno + var_retorno + ";\n";
 	}
 
 	string new_params = ajeita_parametros_funcao(params);
@@ -357,7 +358,7 @@ void gera_codigo_funcao_com_retorno( Atributo& ss,
 			declara_var_temp( temp_local ) + "  " +
 			vars.c +
 			codigo.c +
-			"  return Result;\n}\n\n";
+			"  return " + var_retorno +";\n}\n\n";
 }
 
 void gera_codigo_funcao_sem_retorno( Atributo& ss,
@@ -428,10 +429,10 @@ FUNCTIONDECLS : FUNCTIONDECL FUNCTIONDECLS
 
 FUNCTIONDECL :	NOME_FUNCAO
 				'(' PARAMETROS ')' _RETORNA '('_ID ':' TIPO ')'
-				{ declara_variavel( $9, "Result", $9.t ); 
+				{ declara_variavel( $9, $7.v, $9.t ); 
 					insereFuncao($1.v,$9.t); } 
 				'{' USANDOISSO EXECUTEISSO'}'
-				{ gera_codigo_funcao_com_retorno( $$, $1.v, $9, $3.c, $13, $14 ); 
+				{ gera_codigo_funcao_com_retorno( $$, $1.v, $9, $7.v, $3.c, $13, $14 ); 
 					escopo_local = false;
             		desempilha_tabela_de_simbolos(); }
 				
