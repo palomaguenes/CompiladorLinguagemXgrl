@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -12,16 +13,17 @@ struct Tipo {
   string nome;  // nome na nossa linguagem
   string decl;  // declaração correspondente em c-assembly
   string fmt;   // formato para "printf"
-	int dim;
+  int dim;
 };
 
-Tipo Integer = { "numerosemponto", "int", "d" };
-Tipo Float =   { "numerocomponto", "float", "f" };
-Tipo Double =  { "numerograndecomponto", "double", "lf" };
-Tipo Boolean = { "vouf", "int", "d" };
-Tipo String =  { "palavra", "char", "s" };
-Tipo Char =    { "simbolo", "char", "c" };
+Tipo Integer =	{ "numerosemponto", "int", "d" };
+Tipo Float =	{ "numerocomponto", "float", "f" };
+Tipo Double =	{ "numerograndecomponto", "double", "lf" };
+Tipo Boolean =	{ "vouf", "int", "d" };
+Tipo String =	{ "palavra", "char", "s" };
+Tipo Char = 	{ "simbolo", "char", "c" };
 Tipo Void = 	{"void"};
+
 struct Atributo {
   string v, c;
   Tipo t;
@@ -286,31 +288,58 @@ void gera_cmd_com(Atributo& ss, const Atributo& atr1, const Atributo& atr2, cons
 }
 
 
-void gera_codigo_funcao( Atributo& ss, 
-                         string retorno, 
-                         string nome, 
-                         string params,
-                         const Atributo& vars,
-                         const Atributo&  codigo ) {
-  if(retorno != Void.nome){
-	  ss.c = retorno + " " + nome + "( " + params + " )" + 
-		     "{\n" +
-		     retorno +
-		     declara_var_temp( temp_local ) + 
-		     vars.c +
-		     codigo.c +
-		     "return Result;\n}\n";
-   }
-   if(retorno == Void.nome){
-	  ss.c = "void " + nome + "( " + params + " )" + 
-		     "{\n" +
-		     declara_var_temp( temp_local ) + 
-		     vars.c +
-		     codigo.c +
-		     "\n}\n";
-   }
-         
-         
+string ajeita_parametros_funcao(string params){
+
+	if (params=="")
+		return "";
+
+	string s;
+	
+	while (params.find(";") != std::string::npos){
+		s = (params.replace(params.find(";"), 2, ", "));
+	}
+	
+	s = s.erase(s.size()-2);
+
+	return s;
+}
+
+
+void gera_codigo_funcao_com_retorno( Atributo& ss,
+						             string nome,
+									 const Atributo& retorno,
+						             string params,
+						             const Atributo& vars,
+						             const Atributo& codigo ) {
+
+	string tipo_retorno = retorno.t.decl;
+
+	if (retorno.t.nome == String.nome)
+		tipo_retorno = "char*";
+
+	string new_params = ajeita_parametros_funcao(params);
+
+	ss.c = tipo_retorno + " " + nome + "( " + new_params + " ) {\n  " +
+			retorno.c +
+			declara_var_temp( temp_local ) + "  " +
+			vars.c +
+			codigo.c +
+			"  return Result;\n}\n\n";
+}
+
+void gera_codigo_funcao_sem_retorno( Atributo& ss,
+						             string nome, 
+						             string params,
+						             const Atributo& vars,
+						             const Atributo& codigo ){
+
+	string new_params = ajeita_parametros_funcao(params);
+
+	ss.c = "void " + nome + "( " + new_params + " ) {\n" +
+		 declara_var_temp( temp_local ) + "  " + 
+		 vars.c +
+		 codigo.c +
+		 "\n}\n\n";
 } 
 
     
@@ -357,31 +386,34 @@ USANDOISSO  : _USANDOISSO '{' DECLS '}'  { $$.c = $3.c; }
 	    	| { $$.c = ""; }
 	    	;
 
-FUNCTIONDECLS : FUNCTIONDECL FUNCTIONDECLS
+FUNCTIONDECLS : FUNCTIONDECL FUNCTIONDECLS 
+				{ $$.c = $1.c + $2.c; }
 			  |
+				{ $$.c = ""; }
 			  ;
 
-FUNCTIONDECL : _FUNCAO _ID _RECEBE { escopo_local = true; empilha_nova_tabela_de_simbolos(); } 
-				'(' PARAMETROS ')' _RETORNA '('_ID ':' TIPO ')' 
-				 { declara_variavel( $12, "Result", $12.t ); tf[$2.v] = $12.t; } 
+FUNCTIONDECL : _FUNCAO _ID _RECEBE '(' PARAMETROS ')' _RETORNA '('_ID ':' TIPO ')'
+				{ escopo_local = true; empilha_nova_tabela_de_simbolos();
+					declara_variavel( $11, "Result", $11.t ); tf[$2.v] = $11.t; } 
 				'{' USANDOISSO EXECUTEISSO'}'
-				 { gera_codigo_funcao( $$, $12.c, $2.v, $6.c, $16, $17 ); 
-             		escopo_local = false;
+				{ gera_codigo_funcao_com_retorno( $$, $2.v, $11, $5.c, $15, $16 ); 
+					escopo_local = false;
             		desempilha_tabela_de_simbolos(); }
 				
-			 | _FUNCAO _ID _RECEBE 
-			 { escopo_local = true; empilha_nova_tabela_de_simbolos(); } 
-			 '(' PARAMETROS ')'
-			 { tf[$2.v] = Void; } 
-			  '{' USANDOISSO EXECUTEISSO'}'
-			  { gera_codigo_funcao( $$, "void", $2.v, $6.c, $10, $11 ); 
-             		escopo_local = false;
-            		desempilha_tabela_de_simbolos(); }
+			 | _FUNCAO _ID _RECEBE '(' PARAMETROS ')' '{' USANDOISSO EXECUTEISSO'}'
+				{ escopo_local = true; empilha_nova_tabela_de_simbolos(); 
+					tf[$2.v] = Void; 
+					gera_codigo_funcao_sem_retorno( $$, $2.v, $5.c, $8, $9 ); 
+					escopo_local = false;
+					desempilha_tabela_de_simbolos(); }
 			 ;
 
-PARAMETROS : DECL ',' PARAMETROS
+PARAMETROS : DECL ',' PARAMETROS 
+			{ $$.c = $1.c + $3.c; }
 		   | DECL
-		   | 
+			{ $$.c = $1.c; }
+		   |
+			{ $$.c = ""; }
            ;
      
 EXECUTEISSO : _EXECUTEISSO '{' MIOLOS '}'
