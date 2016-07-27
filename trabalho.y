@@ -158,7 +158,8 @@ void declara_variavel( Atributo& ss, string nome, Tipo tipo ) {
 	
 
 void gera_codigo_atribuicao( Atributo& ss, 
-                             const Atributo& s1, 
+                             const Atributo& s1,
+							 const Atributo& s2,
                              const Atributo& s3 ) {
   
   if( s1.t.nome == s3.t.nome &&  s1.t.nome == "palavra" ) {
@@ -166,13 +167,14 @@ void gera_codigo_atribuicao( Atributo& ss,
            + "strncpy( " + s1.v + ", " + s3.v + ", " + 
            toString( s1.t.dim) + " );\n";
   }else if( s1.t.nome == s3.t.nome ){
-    ss.c = s1.c + s3.c + "  " + s1.v + " = " + s3.v + ";\n";
+    ss.c = s1.c + s3.c + "  " + s1.v + s2.c + " = " + s3.v + ";\n";
   }
 
 }
 
 void gera_codigo_atribuicao_funcao( Atributo& ss, 
-                             const Atributo& s1, 
+                             const Atributo& s1,
+						     const Atributo& s2, 
                              const Atributo& s3 ) {
 
 	vector<Tipo> v = tf[s3.v];
@@ -190,11 +192,11 @@ void gera_codigo_atribuicao_funcao( Atributo& ss,
 		erro("A função '"+ s3.v +"' com retorno '"+ s1.t.nome +"' não existe!");
 
 	if( s1.t.nome == "palavra" ) {
-		ss.c = s1.c + s3.c + "  " 
+		ss.c = s1.c + s2.c + s3.c + "  " 
 		       + "strncpy( " + s1.v + ", " + s3.v + ", " + 
 		       toString( s1.t.dim) + " );\n";
   	}else{
-    	ss.c = "  " +s1.v + " =" + s3.c + "\n";
+    	ss.c = "  " + s1.v + s2.c + " =" + s3.c + "\n";
 	}
 }
 
@@ -455,6 +457,12 @@ string criachamadafuncao( Atributo& ss, Atributo& s1, Atributo& s3){
 	return "  " + s1.v + "(" + s3.v + ");\n";
 }
 
+void checa_tipo_exp(string tipo1, string tipo2){
+
+	if (tipo1 != Integer.nome && tipo2 != Integer.nome)
+		erro("Indices devem ser do tipo numerocomponto");
+}
+
 %}
 
 %token _ID _TUDAO _USANDOISSO _EXECUTEISSO _SE _EHVERDADE _EHMENTIRA 
@@ -648,25 +656,27 @@ LE : _LE IDATR ';'
    ;
 
 CMD_ATRIB : IDATR INDICE _VALE E ';'
-			{ gera_codigo_atribuicao( $$, $1, $4); }
+			{ gera_codigo_atribuicao( $$, $1, $2, $4); }
 	  	  | IDATR INDICE _VALE CHAMADAFUNCAO
-			{ gera_codigo_atribuicao_funcao($$, $1, $4); }
+			{ gera_codigo_atribuicao_funcao($$, $1, $2, $4); }
           ;
 
 CMD_ATRIB_SPV : IDATR INDICE _VALE E
-				{ gera_codigo_atribuicao( $$, $1, $4); }
+				{ gera_codigo_atribuicao( $$, $1, $2, $4); }
 			  ;
 
 IDATR: _ID { busca_tipo_da_variavel( $$, $1 ); }	
 	   ;
           
-INDICE : '[' EXPS ']' '[' EXPS ']'
-       | '[' EXPS ']'
+INDICE : '[' E ']' '[' E ']'
+		{ checa_tipo_exp($1.t.nome , $2.t.nome); 
+		  $$.c = '[' + $2.v + "]["+ $5.v +']' ;}
+       | '[' E ']'
+		{ checa_tipo_exp($1.t.nome, Integer.nome); 
+			$$.c = '[' + $2.v +']';}
+	   | 
+		{ $$.c = ""; };
        ;        
-       
-EXPS : E ',' EXPS
-     | E
-     ;
 
 CMD_SE : _SE '(' E ')' _EHVERDADE '{' CMDS '}'
 		{ gera_cmd_se( $$, $3, $7, ""); }
