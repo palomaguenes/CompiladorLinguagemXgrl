@@ -73,49 +73,6 @@ int toInt( string valor ) {
   return aux;
 }
 
-void generateLabels(std::vector<string>* label, string tipo){
-
-	string label_parte1 = "sw_" + toString(nsw) + "_";
-
-	for (int i = 0; i < swvar.casos.size()-1 ; i++){
-		
-		if (tipo == "simbolo"){
-			(*label).push_back( label_parte1 + swvar.casos[i].at(1) );
-		}
-		else{
-			(*label).push_back( label_parte1 + swvar.casos[i] );
-		} 
-	}
-
-	(*label).push_back( label_parte1 + "default" +":;\n");
-
-}
-
-void gera_switch(Atributo& ss){
-
-	if (swvar.var.t.nome != "numerosemponto" && swvar.var.t.nome != "simbolo"){
-		erro("ESCOLHA recebe numerosemponto e simbolo com parâmetros!\n");
-	}
-	
-	vector<string> labels; 
-	generateLabels(&labels, swvar.var.t.nome);
-	
-	for (int i = 0; i < swvar.casos.size()-1 ; i++){
-		ss.c = ss.c + "  if(" + swvar.var.v + " == " + swvar.casos[i] + ") goto " + labels[i] + ";\n";
-	}
-
-	int indice = swvar.casos.size()-1;
-
-	ss.c = "\n" + ss.c + labels[indice] + swvar.cod_casos[indice] + "  goto fim_sw_" + toString(nsw) + ";\n";
-
-	for (int i = 0; i < swvar.casos.size()-1 ; i++){
-		ss.c = ss.c + labels[i] + ":;\n" + swvar.cod_casos[i] + "  goto fim_sw_" + toString(nsw) + ";\n";
-	}
-
-	ss.c = ss.c + "fim_sw_" + toString(nsw) + ":;\n\n";
-
-}
-
 void insereFuncao(string nome, Tipo retorno){
 
 	vector<Tipo> v;
@@ -383,6 +340,48 @@ void gera_cmd_com(Atributo& ss, const Atributo& atr1, const Atributo& atr2, cons
 
 }
 
+void gera_labels(std::vector<string>* label, string tipo){
+
+	string label_parte1 = "sw_" + toString(nsw) + "_";
+
+	for (int i = 0; i < swvar.casos.size()-1 ; i++){
+		
+		if (tipo == "simbolo"){
+			(*label).push_back( label_parte1 + swvar.casos[i].at(1) );
+		}
+		else{
+			(*label).push_back( label_parte1 + swvar.casos[i] );
+		} 
+	}
+
+	(*label).push_back( label_parte1 + "default" +":;\n");
+
+}
+
+void gera_cmd_switch(Atributo& ss){
+
+	if (swvar.var.t.nome != "numerosemponto" && swvar.var.t.nome != "simbolo"){
+		erro("ESCOLHA recebe numerosemponto e simbolo com parâmetros!\n");
+	}
+	
+	vector<string> labels; 
+	gera_labels(&labels, swvar.var.t.nome);
+	
+	for (int i = 0; i < swvar.casos.size()-1 ; i++){
+		ss.c = ss.c + "  if(" + swvar.var.v + " == " + swvar.casos[i] + ") goto " + labels[i] + ";\n";
+	}
+
+	int indice = swvar.casos.size()-1;
+
+	ss.c = "\n" + ss.c + labels[indice] + swvar.cod_casos[indice] + "  goto fim_sw_" + toString(nsw) + ";\n";
+
+	for (int i = 0; i < swvar.casos.size()-1 ; i++){
+		ss.c = ss.c + labels[i] + ":;\n" + swvar.cod_casos[i] + "  goto fim_sw_" + toString(nsw) + ";\n";
+	}
+
+	ss.c = ss.c + "fim_sw_" + toString(nsw) + ":;\n\n";
+
+}
 
 string ajeita_parametros_funcao(string params){
 
@@ -454,7 +453,7 @@ string criachamadafuncao( Atributo& ss, Atributo& s1, Atributo& s3){
 	}
 	
 	return "  " + s1.v + "(" + s3.v + ");\n";
-}    
+}
 
 %}
 
@@ -614,8 +613,10 @@ CMD : MOSTRE
 
 CMD_ESCOLHA : _ESCOLHA F '{' ESCOLHAS '}'
 			 { swvar.var = $2 ; 
-			   gera_switch($$);
+			   gera_cmd_switch($$);
 			   nsw++;
+			   Sw clear_sw;
+			   swvar = clear_sw;
 			 }
 			;
 
