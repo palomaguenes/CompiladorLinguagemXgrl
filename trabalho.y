@@ -660,9 +660,9 @@ CMD_ATRIB_SPV : IDATR INDICE _VALE E
 IDATR: _ID { busca_tipo_da_variavel( $$, $1 ); }	
 	   ;
           
-INDICE : '[' EXPS ']' INDICE
-       |
-       ;         
+INDICE : '[' EXPS ']' '[' EXPS ']'
+       | '[' EXPS ']'
+       ;        
        
 EXPS : E ',' EXPS
      | E
