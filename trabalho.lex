@@ -92,7 +92,7 @@ CTE_NUMEROGRANDECOMPONTO {REAL}
 {RETORNA}	{  trata_folha(); return _RETORNA; }
 {NADA}		{  trata_folha(); return _NADA; }
 
-{CTE_SIMBOLO} 				{ trata_aspas_simples(); return _CTE_SIMBOLO; }
+{CTE_SIMBOLO} 				{ trata_folha(); return _CTE_SIMBOLO; }
 {CTE_PALAVRA} 				{ trata_aspas_simples(); return _CTE_PALAVRA; }
 {CTE_NUMEROSEMPONTO} 		{ trata_folha(); return _CTE_NUMEROSEMPONTO; }
 {CTE_NUMEROCOMPONTO} 		{ trata_folha(); return _CTE_NUMEROCOMPONTO; }

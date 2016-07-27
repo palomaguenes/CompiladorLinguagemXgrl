@@ -161,6 +161,33 @@ void gera_codigo_atribuicao( Atributo& ss,
 
 }
 
+void gera_codigo_atribuicao_funcao( Atributo& ss, 
+                             const Atributo& s1, 
+                             const Atributo& s3 ) {
+
+	vector<Tipo> v = tf[s3.v];
+
+	bool existe = false;
+
+	for (int i = 0; i < v.size(); i++){
+		if ( v[i].nome == s1.t.nome){
+			existe = true;
+			break;	
+		}
+	}
+
+	if (!existe)
+		erro("A função '"+ s3.v +"' com retorno '"+ s1.t.nome +"' não existe!");
+
+	if( s1.t.nome == "palavra" ) {
+		ss.c = s1.c + s3.c + "  " 
+		       + "strncpy( " + s1.v + ", " + s3.v + ", " + 
+		       toString( s1.t.dim) + " );\n";
+  	}else{
+    	ss.c = "  " +s1.v + " =" + s3.c + "\n";
+	}
+}
+
 void busca_tipo_da_variavel( Atributo& ss, const Atributo& s1 ) {
   if( ts[ts.size()-1].find( s1.v ) == ts[ts.size()-1].end() )
         erro( "Variável não declarada: " + s1.v );
@@ -314,6 +341,10 @@ string ajeita_parametros_funcao(string params){
 	while (params.find(";") != std::string::npos){
 		s = (params.replace(params.find(";"), 2, ", "));
 	}
+
+	while (params.find("*") != std::string::npos){
+		s = (params.replace(params.find("*"), 5, "[256]"));
+	}
 	
 	s = s.erase(s.size()-2);
 
@@ -362,7 +393,15 @@ void gera_codigo_funcao_sem_retorno( Atributo& ss,
 		 "\n}\n\n";
 } 
 
-    
+
+string criachamadafuncao( Atributo& ss, Atributo& s1, Atributo& s3){
+
+	if ( tf.find( s1.v ) == tf.end() ){
+		erro("Funcao " + s1.v + " não existe!");	
+	}
+	
+	return "  " + s1.v + "(" + s3.v + ");\n";
+}    
 
 %}
 
@@ -486,19 +525,22 @@ MIOLO : CHAMADAFUNCAO
       ;              
 
 CHAMADAFUNCAO: _ID '(' PARAM_CHAMADA ')' ';'
-		{ $$.v = gera_nome_var( tf[$1.v] );
-                      $$.c = $3.c +
-                      "  " + $$.v + " = " + $1.v + "( " + $3.v + " );\n"; 
-                      $$.t = tf[$1.v]; }
+				{ $$.c = $3.c + criachamadafuncao($$, $1, $3);
+					$$.v = $1.v;}
              ;
 
 
-PARAM_CHAMADA: FS
+PARAM_CHAMADA: ES
+				{$$ = $1; }
+			 |
+				{$$.v = $$.c = ""; }
 	         ;
 
-FS: F ',' FS
-  | F
-  |
+ES: E ',' ES 
+	{   $$.c = $1.c + $3.c;
+		$$.v = $1.v + ',' + $3.v; }
+  | E
+	{$$ = $1; }
   ;
 
 CMDS: CMD CMDS 
@@ -536,11 +578,14 @@ CASOCONTRARIO : _CASOCONTRARIO ':' MIOLOS
 MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t.fmt + "\\n\", " + $2.v + " );\n"; }
       ; 
 
-LE: _LE E ';' { $$.c = "  scanf( \"%"+ $2.t.fmt + "\", &"+ $2.v + " );\n"; }
+LE : _LE E ';' 
+	{ $$.c = "  scanf( \"%"+ $2.t.fmt + "\", &"+ $2.v + " );\n"; }
+   ;
 
 CMD_ATRIB : IDATR INDICE _VALE E ';'
-			      { gera_codigo_atribuicao( $$, $1, $4); }
-	  	   | IDATR INDICE _VALE CHAMADAFUNCAO
+			{ gera_codigo_atribuicao( $$, $1, $4); }
+	  	  | IDATR INDICE _VALE CHAMADAFUNCAO
+			{ gera_codigo_atribuicao_funcao($$, $1, $4); }
           ;
 
 CMD_ATRIB_SPV : IDATR INDICE _VALE E

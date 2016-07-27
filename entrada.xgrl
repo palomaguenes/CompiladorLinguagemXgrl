@@ -8,21 +8,19 @@ TUDAO{
 		d : numerograndecomponto;
 	}
 
-	funcao nomedafuncao1 recebe(b: palavra) retorna (c:simbolo){
-		usandoisso{
-			a: palavra[15];
-		}
-	
+	funcao nomedafuncao1 recebe() retorna (c:numerosemponto){
+
 		executeisso {
 			
-			mostre a;
+			c vale 7;
 		}
 	}
 
-	funcao nomedafuncao recebe(pp: palavra){
+	funcao nomedafuncao recebe(s: palavra, n:numerosemponto){
 		
 		executeisso {
-			mostre 'patinhos';
+			mostre n;
+			mostre s;
 		}
 	}
 	
@@ -41,8 +39,6 @@ TUDAO{
 
 	executeisso {
 
-		Mostre 'monkeys';
-
 		booleano vale 2>3;
 		
 		Mostre booleano;
@@ -53,7 +49,7 @@ TUDAO{
 
 		n vale -1;
 		
-		m vale resto(3/3/3/3 sobre 4/4);
+		m vale resto(3/3 sobre 4/4);
 
 		m vale n + 4 / ( n + m );
 
@@ -80,25 +76,25 @@ TUDAO{
 		}
 
 		execute{
-			mostre 'prato'; 
+			mostre 'compiladores <3'; 
 		}repita se (m < 5);
-
-		x vale 9.77 + 2.1;
 		
 		escolha n {
 			sefor 1 : 
-				mostre 'ola'; 
+				mostre 'Amanda'; 
 				ok
 			sefor 2:
-				mostre 'hu';
+				mostre 'Paloma';
 				ok
 			casocontrario:
-				
+				mostre 'Patricia';
 		}
 
-		nomedafuncao();
+		nomedafuncao('Zebras', 3+9);
 
-		m vale nomedafuncao('palavra', 'a', 1.1);
+		m vale nomedafuncao1();
+
+		mostre m;
 
 	}
 }
