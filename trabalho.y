@@ -642,7 +642,7 @@ CASOCONTRARIO : _CASOCONTRARIO ':' MIOLOS
 MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t.fmt + "\\n\", " + $2.v + " );\n"; }
       ; 
 
-LE : _LE E ';' 
+LE : _LE IDATR ';' 
 	{ $$.c = "  scanf( \"%"+ $2.t.fmt + "\", &"+ $2.v + " );\n"; }
    ;
 
