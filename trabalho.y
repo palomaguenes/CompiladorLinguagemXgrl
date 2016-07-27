@@ -137,7 +137,8 @@ string trata_dimensoes_decl_var( Tipo t ) {
 // 'Atributo&': o '&' significa passar por referência (modifica).
 void declara_variavel( Atributo& ss, 
                        vector<string> lst, 
-                       Tipo tipo ) {
+                       Tipo tipo,
+					   string dimensao) {
   ss.c = "";
   for( int i = 0; i < lst.size(); i++ ) {
     if( ts[ts.size()-1].find( lst[i] ) != ts[ts.size()-1].end() ) 
@@ -145,7 +146,7 @@ void declara_variavel( Atributo& ss,
     else {
       ts[ts.size()-1][ lst[i] ] = tipo; 
       ss.c += tipo.decl + " " + lst[i] 
-              + trata_dimensoes_decl_var( tipo ) + ";\n"; 
+              + trata_dimensoes_decl_var( tipo ) + dimensao + ";\n"; 
     }  
   }
 }
@@ -153,7 +154,7 @@ void declara_variavel( Atributo& ss,
 void declara_variavel( Atributo& ss, string nome, Tipo tipo ) {
   vector<string> lst;
   lst.push_back( nome );
-  declara_variavel( ss, lst, tipo );
+  declara_variavel( ss, lst, tipo, "" );
 }
 	
 
@@ -473,7 +474,7 @@ void checa_tipo_exp(string tipo1, string tipo2){
 
 %token _CTE_PALAVRA _CTE_NUMEROSEMPONTO _CTE_NUMEROCOMPONTO _CTE_NUMEROGRANDECOMPONTO _CTE_SIMBOLO
 
-%token _RESTO _SOBRE
+%token _RESTO _SOBRE _X
 
 %token _OU _E _NAO
 
@@ -553,8 +554,15 @@ DECLS : DECL ';' DECLS { $$.c = $1.c + $3.c; }
       |	DECL ';'
       ;
      
-DECL : IDS ':' TIPO  { declara_variavel( $$, $1.lst, $3.t ); }     
-     ;      
+DECL : IDS ':' TIPO  TAMANHOARRAY { declara_variavel( $$, $1.lst, $3.t, $4.c ); }     
+     ;
+
+TAMANHOARRAY : _CTE_NUMEROSEMPONTO _X  _CTE_NUMEROSEMPONTO
+				{ $$.c = '[' + toString(toInt($1.v) * toInt($3.v)) + ']' ; }
+			 | _CTE_NUMEROSEMPONTO
+				{ $$.c = '[' + $1.v + ']'; }
+			 |	
+				{ $$.c = ""; }
 
 IDS : IDS '&' _ID { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
     | _ID		  { $$.lst.push_back( $1.v ); }
@@ -670,10 +678,10 @@ IDATR: _ID { busca_tipo_da_variavel( $$, $1 ); }
           
 INDICE : '[' E ']' '[' E ']'
 		{ checa_tipo_exp($1.t.nome , $2.t.nome); 
-		  $$.c = '[' + $2.v + "]["+ $5.v +']' ;}
+		  $$.c = "[" + toString( toInt($2.v) * toInt($5.v) ) + "]" ;}
        | '[' E ']'
 		{ checa_tipo_exp($1.t.nome, Integer.nome); 
-			$$.c = '[' + $2.v +']';}
+			$$.c = "[" + $2.v + "]";}
 	   | 
 		{ $$.c = ""; };
        ;        

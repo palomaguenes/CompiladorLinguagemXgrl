@@ -5,8 +5,8 @@ TUDAO{
 		b: palavra;
 		s: numerosemponto;
 		m & n & j: numerosemponto;
-		x & l: numerocomponto;
-		d : numerograndecomponto;
+		y & l: numerocomponto;
+		d : numerograndecomponto 2;
 	}
 
 	funcao nomedafuncao1 recebe() retorna (c:numerosemponto){
@@ -94,7 +94,7 @@ TUDAO{
 
 		nomedafuncao('Zebras', 3+9);
 
-		m vale nomedafuncao1();
+		m[10] vale nomedafuncao1();
 
 		mostre m;
 
