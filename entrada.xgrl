@@ -3,6 +3,7 @@ TUDAO{
 		booleano: vouf;
 		a: palavra[15];
 		b: palavra;
+		s: numerosemponto;
 		m & n & j: numerosemponto;
 		x & l: numerocomponto;
 		d : numerograndecomponto;
@@ -79,7 +80,8 @@ TUDAO{
 			mostre 'compiladores <3'; 
 		}repita se (m < 5);
 		
-		escolha n {
+		s vale 2;
+		escolha s {
 			sefor 1 : 
 				mostre 'Amanda'; 
 				ok

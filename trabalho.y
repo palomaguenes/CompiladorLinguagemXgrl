@@ -47,6 +47,16 @@ map< string, int > temp_local;
 map< string, int > nlabel;
 bool escopo_local = false;
 
+struct Sw{
+	Atributo var;
+	vector<string> casos;
+	vector<string> cod_casos;
+};
+
+Sw swvar;
+
+int nsw = 0;
+
 string toString( int n ) {
   char buf[256] = "";
   
@@ -61,6 +71,49 @@ int toInt( string valor ) {
   sscanf( valor.c_str(), "%d", &aux );
   
   return aux;
+}
+
+void generateLabels(std::vector<string>* label, string tipo){
+
+	string label_parte1 = "sw_" + toString(nsw) + "_";
+
+	for (int i = 0; i < swvar.casos.size()-1 ; i++){
+		
+		if (tipo == "simbolo"){
+			(*label).push_back( label_parte1 + swvar.casos[i].at(1) );
+		}
+		else{
+			(*label).push_back( label_parte1 + swvar.casos[i] );
+		} 
+	}
+
+	(*label).push_back( label_parte1 + "default" +":;\n");
+
+}
+
+void gera_switch(Atributo& ss){
+
+	if (swvar.var.t.nome != "numerosemponto" && swvar.var.t.nome != "simbolo"){
+		erro("ESCOLHA recebe numerosemponto e simbolo com parâmetros!\n");
+	}
+	
+	vector<string> labels; 
+	generateLabels(&labels, swvar.var.t.nome);
+	
+	for (int i = 0; i < swvar.casos.size()-1 ; i++){
+		ss.c = ss.c + "  if(" + swvar.var.v + " == " + swvar.casos[i] + ") goto " + labels[i] + ";\n";
+	}
+
+	int indice = swvar.casos.size()-1;
+
+	ss.c = "\n" + ss.c + labels[indice] + swvar.cod_casos[indice] + "  goto fim_sw_" + toString(nsw) + ";\n";
+
+	for (int i = 0; i < swvar.casos.size()-1 ; i++){
+		ss.c = ss.c + labels[i] + ":;\n" + swvar.cod_casos[i] + "  goto fim_sw_" + toString(nsw) + ";\n";
+	}
+
+	ss.c = ss.c + "fim_sw_" + toString(nsw) + ":;\n\n";
+
 }
 
 void insereFuncao(string nome, Tipo retorno){
@@ -560,9 +613,16 @@ CMD : MOSTRE
     ; 
 
 CMD_ESCOLHA : _ESCOLHA F '{' ESCOLHAS '}'
+			 { swvar.var = $2 ; 
+			   gera_switch($$);
+			   nsw++;
+			 }
 			;
 
 ESCOLHAS : CASOS CASOCONTRARIO
+			{ swvar.casos.push_back("default");
+			  swvar.cod_casos.push_back($2.c);
+			}
 		 ;
 
 CASOS : CASO CASOS
@@ -570,9 +630,13 @@ CASOS : CASO CASOS
 	  ;
 
 CASO : _SEFOR F ':' MIOLOS _OK
+	  	{ swvar.casos.push_back($2.v);
+		  swvar.cod_casos.push_back($4.c);
+		}
 	 ;
 
 CASOCONTRARIO : _CASOCONTRARIO ':' MIOLOS
+				{$$.c = $3.c;}
 			  ;
 
 MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t.fmt + "\\n\", " + $2.v + " );\n"; }
