@@ -1,0 +1,9 @@
+*~
+*.y
+*.output
+ytab.c
+lex.yy.c
+trabalho
+saida.cc
+bin/
+
