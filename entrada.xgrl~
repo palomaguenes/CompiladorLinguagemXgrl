@@ -1,0 +1,103 @@
+TUDAO{
+	usandoisso{
+		booleano: vouf;
+		a: palavra[15];
+		b: palavra;
+		m & n & j: numerosemponto;
+		x & l: numerocomponto;
+		d : numerograndecomponto;
+	}
+
+	funcao nomedafuncao1 recebe(b: palavra) retorna (c:simbolo){
+		usandoisso{
+			a: palavra[15];
+		}
+	
+		executeisso {
+			mostre a;
+		}
+	}
+
+	funcao nomedafuncao recebe(pp: palavra){
+		
+		executeisso {
+			mostre 'patinhos';
+		}
+	}
+	
+	funcao nomedafuncao2 recebe(p2: simbolo,  n3: numerocomponto){
+
+		usandoisso{
+			ad: palavra[16];
+		}
+	
+		executeisso {
+			ad vale 'funcao otima';
+			mostre ad;
+		}
+
+	}	
+
+	executeisso {
+
+		Mostre 'monkeys';
+
+		booleano vale 2>3;
+		
+		Mostre booleano;
+
+		booleano vale NAO(booleano);
+
+		mostre booleano;
+
+		n vale -1;
+		
+		m vale resto(3/3/3/3 sobre 4/4);
+
+		m vale n + 4 / ( n + m );
+
+		se ((1 = 1) ou (2 =1)) ehverdade{
+			mostre 'oi';
+		}
+
+		se (NAO(m > n)) ehverdade{
+			mostre 'hello';
+		}ehmentira{
+			mostre 'ola';
+		}
+
+		com (m vale 1) faca (m vale m+1) enquanto (m < 5){
+			Mostre m;
+			Mostre 'for';
+		}
+
+		m vale 3;
+
+		repita se (m<5){
+			mostre 'bananas';
+			m vale m+1;
+		}
+
+		execute{
+			mostre 'prato'; 
+		}repita se (m < 5);
+
+		x vale 9.77 + 2.1;
+		
+		escolha n {
+			sefor 1 : 
+				mostre 'ola'; 
+				ok
+			sefor 2:
+				mostre 'hu';
+				ok
+			casocontrario:
+				
+		}
+
+		nomedafuncao();
+
+		m vale nomedafuncao('palavra', 'a', 1.1);
+
+	}
+}
