@@ -486,7 +486,12 @@ MIOLO : CHAMADAFUNCAO
       ;              
 
 CHAMADAFUNCAO: _ID '(' PARAM_CHAMADA ')' ';'
+		{ $$.v = gera_nome_var( tf[$1.v] );
+                      $$.c = $3.c +
+                      "  " + $$.v + " = " + $1.v + "( " + $3.v + " );\n"; 
+                      $$.t = tf[$1.v]; }
              ;
+
 
 PARAM_CHAMADA: FS
 	         ;
