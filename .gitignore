@@ -1,5 +1,4 @@
 *~
-*.y
 *.output
 ytab.c
 lex.yy.c
