@@ -1,0 +1,40 @@
+TUDAO{
+
+	usandoisso{
+	
+		n1 & n2 & r: numerosemponto;		
+	}
+
+	funcao calculamdc recebe() retorna(mdc:numerosemponto){
+
+		usandoisso{
+			r: numerosemponto;
+		}
+		
+		executeisso {
+
+			Repita se (n2 > 0){
+				r vale resto(n1 sobre n2);
+				n1 vale n2;
+				n2 vale r;
+			}
+			
+			mdc vale n1;
+	
+		}
+	}
+
+	executeisso {
+
+		mostre 'Digite um numero inteiro';
+		le n1;
+		
+		mostre 'Digite outro numero inteiro';
+		le n2;
+      
+		r vale calculamdc();
+              
+        mostre r;
+
+	}
+}

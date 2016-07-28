@@ -216,12 +216,20 @@ void gera_codigo_atribuicao_funcao( Atributo& ss,
 }
 
 void busca_tipo_da_variavel( Atributo& ss, const Atributo& s1 ) {
-  if( ts[ts.size()-1].find( s1.v ) == ts[ts.size()-1].end() )
-        erro( "Variável não declarada: " + s1.v );
-  else {
-    ss.t = ts[ts.size()-1][ s1.v ];
-    ss.v = s1.v;
-  }
+
+	bool encontrada = false;
+
+	for (int i = ts.size()-1; i >= 0 ; i--){
+		if( ts[i].find( s1.v ) != ts[i].end() ){
+			ss.t = ts[i][ s1.v ];
+			ss.v = s1.v;
+			encontrada = true;
+			break;
+		}
+	}
+
+	if (!encontrada) 
+		erro( "Variável não declarada: " + s1.v );
 }
 
 string par( Tipo a, Tipo b ) {
@@ -505,7 +513,7 @@ void checa_tipo_exp(string tipo1, string tipo2){
 %left _OU
 %left _E
 %left _NAO
-%nonassoc '>' '<' '=' ">=" "<="
+%nonassoc '>' '<' '=' ">=" "<=" "!="
 %left _RESTO
 %left '+' '-'
 %left '*' '/'
@@ -617,7 +625,7 @@ MIOLO : CHAMADAFUNCAO
       ;              
 
 CHAMADAFUNCAO: _ID '(' PARAM_CHAMADA ')' ';'
-				{ $$.c = criachamadafuncao($$, $1, $3);
+				{ $$.c = $3.c + criachamadafuncao($$, $1, $3);
 				  $$.v = $1.v;}
              ;
 
@@ -736,6 +744,7 @@ E : E '+' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E '<' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E "<=" E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E ">=" E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  | E "!=" E { gera_codigo_operador( $$, $1, $2, $3 ); }
   |	E _E E   { gera_codigo_operador( $$, $1, $2, $3); }
   | E _OU E  { gera_codigo_operador( $$, $1, $2, $3); }
   | _RESTO '(' E _SOBRE E ')' { gera_codigo_operador( $$, $3, $1, $5 ); }
