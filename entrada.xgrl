@@ -1,12 +1,12 @@
 TUDAO{
 	usandoisso{
 		booleano: vouf;
-		a: palavra[15];
-		b: palavra;
+		d: palavra[15];
+		a & c & b: palavra;
 		s: numerosemponto;
 		m & n & j: numerosemponto;
 		y & l: numerocomponto;
-		d : numerograndecomponto 2;
+		pop : numerograndecomponto 2;
 	}
 
 	funcao nomedafuncao1 recebe() retorna (c:numerosemponto){
@@ -40,46 +40,10 @@ TUDAO{
 
 	executeisso {
 
-		booleano vale 2>3;
-		
-		Mostre booleano;
-
-		booleano vale NAO(booleano);
-
-		mostre booleano;
-
-		n vale -1;
-		
-		m vale resto(3/3 sobre 4/4);
-
-		m vale n + 4 / ( n + m );
-
-		se ((1 = 1) ou (2 =1)) ehverdade{
-			mostre 'oi';
+		se (1=1) ehverdade{
+			mostre 'ampere';		
 		}
 
-		se (NAO(m > n)) ehverdade{
-			mostre 'hello';
-		}ehmentira{
-			mostre 'ola';
-		}
-
-		com (m vale 1) faca (m vale m+1) enquanto (m < 5){
-			Mostre m;
-			Mostre 'for';
-		}
-
-		m vale 3;
-
-		repita se (m<5){
-			mostre 'bananas';
-			m vale m+1;
-		}
-
-		execute{
-			mostre 'compiladores <3'; 
-		}repita se (m < 5);
-		
 		s vale 2;
 		escolha s {
 			sefor 1 : 
@@ -92,11 +56,12 @@ TUDAO{
 				mostre 'Patricia';
 		}
 
-		nomedafuncao('Zebras', 3+9);
+		a vale 'Compiladores';
+		b vale ' são ótimos';
+		c vale '!!!';
 
-		m[10] vale nomedafuncao1();
-
-		mostre m;
+		d vale a + b + c;
+		mostre d;
 
 	}
 }

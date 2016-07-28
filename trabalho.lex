@@ -60,8 +60,6 @@ CTE_NUMEROGRANDECOMPONTO {REAL}
 "\n" { yylineno++; yyrowno = 1; }
 {WS} { yyrowno += 1; }
 
-{WS} {}
-
 "TUDAO"					{  trata_folha(); return _TUDAO; }
 {USANDOISSO} 			{  trata_folha(); return _USANDOISSO; }
 {PALAVRA} 				{  trata_folha(); return _PALAVRA; }

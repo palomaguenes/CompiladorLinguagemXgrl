@@ -129,7 +129,7 @@ string trata_dimensoes_decl_var( Tipo t ) {
   string aux;
   
   if (t.dim != 0)
-  		aux += "[" + toString(t.dim) + "]";
+  		aux += toString(t.dim);
            
   return aux;
 }
@@ -138,15 +138,29 @@ string trata_dimensoes_decl_var( Tipo t ) {
 void declara_variavel( Atributo& ss, 
                        vector<string> lst, 
                        Tipo tipo,
-					   string dimensao) {
+					   string dimensaov) {
   ss.c = "";
+
+  string dimensao;
   for( int i = 0; i < lst.size(); i++ ) {
     if( ts[ts.size()-1].find( lst[i] ) != ts[ts.size()-1].end() ) 
       erro( "Variável já declarada: " + lst[i] );
     else {
-      ts[ts.size()-1][ lst[i] ] = tipo; 
-      ss.c += tipo.decl + " " + lst[i] 
-              + trata_dimensoes_decl_var( tipo ) + dimensao + ";\n"; 
+
+		if (tipo.nome == "palavra"){
+			dimensao = trata_dimensoes_decl_var( tipo );
+		}else{
+			dimensao = dimensaov;
+		}
+
+		if (toInt(dimensaov) > 0 && toInt(trata_dimensoes_decl_var( tipo )) > 0 )
+			dimensao = toString(toInt(trata_dimensoes_decl_var( tipo )) * toInt(dimensaov));
+
+		if (toInt(dimensao) > 0)  dimensao = '[' + dimensao +']';
+		else	dimensao = "";
+
+		ts[ts.size()-1][ lst[i] ] = tipo; 
+		ss.c += tipo.decl + " " + lst[i] +  dimensao + ";\n"; 
     }  
   }
 }
@@ -154,7 +168,7 @@ void declara_variavel( Atributo& ss,
 void declara_variavel( Atributo& ss, string nome, Tipo tipo ) {
   vector<string> lst;
   lst.push_back( nome );
-  declara_variavel( ss, lst, tipo, "" );
+  declara_variavel( ss, lst, tipo, "");
 }
 	
 
@@ -166,7 +180,7 @@ void gera_codigo_atribuicao( Atributo& ss,
   if( s1.t.nome == s3.t.nome &&  s1.t.nome == "palavra" ) {
     ss.c = s1.c + s3.c + "  " 
            + "strncpy( " + s1.v + ", " + s3.v + ", " + 
-           toString( s1.t.dim) + " );\n";
+           toString( s3.t.dim ) + " );\n";
   }else if( s1.t.nome == s3.t.nome ){
     ss.c = s1.c + s3.c + "  " + s1.v + s2.c + " = " + s3.v + ";\n";
   }
@@ -221,9 +235,15 @@ void gera_codigo_operador( Atributo& ss,  const Atributo& s1, const Atributo& s2
     if( tiporesultado[s2.v].find( par( s1.t, s3.t ) ) != tiporesultado[s2.v].end() ) {
      
       ss.t =  tiporesultado[s2.v][par( s1.t, s3.t )];
-      ss.v = gera_nome_var( ss.t );
-      ss.c = s1.c + s3.c + "  " + ss.v + " = " + s1.v + s2.v + s3.v + ";\n";
-    }
+    
+	  if (s1.t.nome == String.nome && s3.t.nome == String.nome){
+			ss.c  = s1.c + s3.c + "  strncat("+ s1.v + ", " + s3.v + ", " + toString(s3.t.dim) +");\n";
+	  }
+	  else{
+		ss.v = gera_nome_var( ss.t );
+      	ss.c = s1.c + s3.c + "  " + ss.v + " = " + s1.v + s2.v + s3.v + ";\n";
+	  }    
+	}
     else
       erro( "O operador '" + s2.v + "' não está definido para os tipos " + s1.t.nome + " e " + s3.t.nome + "." );
  
@@ -369,9 +389,17 @@ void gera_cmd_switch(Atributo& ss){
 	
 	vector<string> labels; 
 	gera_labels(&labels, swvar.var.t.nome);
+
+	string var_comparacao = "";
 	
 	for (int i = 0; i < swvar.casos.size()-1 ; i++){
-		ss.c = ss.c + "  if(" + swvar.var.v + " == " + swvar.casos[i] + ") goto " + labels[i] + ";\n";
+
+		if (swvar.var.t.nome != swvar.var.t.nome) 
+			erro ("Caso do ESCOLHA com tipo diferente de "+  swvar.var.t.nome);
+		var_comparacao = gera_nome_var(Boolean);
+		ss.c = ss.c + 
+				var_comparacao + " = " + swvar.var.v + " == " + swvar.casos[i] + ";\n"+			
+				"  if(" + var_comparacao + ") goto " + labels[i] + ";\n";
 	}
 
 	int indice = swvar.casos.size()-1;
@@ -395,10 +423,6 @@ string ajeita_parametros_funcao(string params){
 	
 	while (params.find(";") != std::string::npos){
 		s = (params.replace(params.find(";"), 2, ", "));
-	}
-
-	while (params.find("*") != std::string::npos){
-		s = (params.replace(params.find("*"), 5, "[256]"));
 	}
 	
 	s = s.erase(s.size()-2);
@@ -554,15 +578,15 @@ DECLS : DECL ';' DECLS { $$.c = $1.c + $3.c; }
       |	DECL ';'
       ;
      
-DECL : IDS ':' TIPO  TAMANHOARRAY { declara_variavel( $$, $1.lst, $3.t, $4.c ); }     
+DECL : IDS ':' TIPO  TAMANHOARRAY { declara_variavel( $$, $1.lst, $3.t, $4.v ); }     
      ;
 
 TAMANHOARRAY : _CTE_NUMEROSEMPONTO _X  _CTE_NUMEROSEMPONTO
-				{ $$.c = '[' + toString(toInt($1.v) * toInt($3.v)) + ']' ; }
+				{ $$.v = toString(toInt($1.v) * toInt($3.v));}
 			 | _CTE_NUMEROSEMPONTO
-				{ $$.c = '[' + $1.v + ']'; }
+				{ $$.v = toString(toInt($1.v)); }
 			 |	
-				{ $$.c = ""; }
+				{ $$.v = "";}
 
 IDS : IDS '&' _ID { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
     | _ID		  { $$.lst.push_back( $1.v ); }
@@ -577,7 +601,7 @@ TIPO : _NUMEROSEMPONTO		{ $$.t = Integer; }
      ;
 
 TAM_PALAVRA: '[' _CTE_NUMEROSEMPONTO ']'
-							{ $$.t = String; $$.t.dim = toInt( $2.v ); }
+				{ $$.t = String; $$.t.dim = toInt( $2.v ); }
            |	{ $$.t = String; }
            ; 
 
@@ -593,8 +617,8 @@ MIOLO : CHAMADAFUNCAO
       ;              
 
 CHAMADAFUNCAO: _ID '(' PARAM_CHAMADA ')' ';'
-				{ $$.c = $3.c + criachamadafuncao($$, $1, $3);
-					$$.v = $1.v;}
+				{ $$.c = criachamadafuncao($$, $1, $3);
+				  $$.v = $1.v;}
              ;
 
 
@@ -605,7 +629,7 @@ PARAM_CHAMADA: ES
 	         ;
 
 ES: E ',' ES 
-	{   $$.c = $1.c + $3.c;
+	{  	$$.c = $1.c + $3.c;
 		$$.v = $1.v + ',' + $3.v; }
   | E
 	{$$ = $1; }
