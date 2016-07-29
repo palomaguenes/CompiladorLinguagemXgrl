@@ -568,16 +568,6 @@ void gera_codigo_scanf(Atributo& ss, Atributo& s2){
 
 }
 
-void gera_codigo_le(Atributo& ss, Atributo& s2){
-
-	string endereco = "&";
-	atribui_tipo_var(s2);
-	if (s2.t.nome == "palavra")
-		endereco = " ";
-
-	ss.c = "  scanf( \"%"+ s2.t.fmt + "\"," + endereco + s2.v + " );\n";
-}
-
 %}
 
 %token _ID _TUDAO _USANDOISSO _EXECUTEISSO _SE _EHVERDADE _EHMENTIRA
@@ -778,7 +768,7 @@ MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t.fmt + "\\n\", " + $2.v + " 
       ; 
 
 LE : _LE IDATR ';' 
-	{ gera_codigo_le($$, $2); }
+	{ $$.c = "  scanf( \"%"+ $2.t.fmt + "\", &"+ $2.v + " );\n"; }
    ;
 
 CMD_ATRIB : IDATR INDICE _VALE E ';'
