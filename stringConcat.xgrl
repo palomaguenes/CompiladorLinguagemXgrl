@@ -1,12 +1,16 @@
 TUDAO{
-	usandoisso{
-		nome: palavra;
-		sobrenome: palavra;
-		nomeCompleto: palavra;
-	}
+  usandoisso{
+    nome: palavra;
+    sobrenome: palavra;
+    nomeCompleto: palavra;
+  }
 
-	executeisso{
-		nomeCompleto vale nome + sobrenome;
-		mostre nomeCompleto;
-	}
+  executeisso{
+  
+    nome vale 'Britney ';
+    sobrenome vale 'Spears';
+
+    nomeCompleto vale nome + sobrenome;
+    mostre nomeCompleto;
+  }
 }
