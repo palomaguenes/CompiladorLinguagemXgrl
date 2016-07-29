@@ -1,0 +1,42 @@
+TUDAO{
+	usandoisso{
+		d : numerosemponto 2 x 2;
+		m & n: numerosemponto;
+		g : numerocomponto 3;
+		g1 & g2 : numerocomponto;
+	}	
+
+	executeisso {
+
+
+		d[0][0] vale 1;
+		d[0][1] vale 2;
+		d[1][0] vale 3;
+		d[1][1] vale 4;
+					
+		m vale d[0][0];
+		n vale d[0][1];		
+		n vale m + n;
+
+		escolha n {
+			
+			sefor 1: mostre 'n vale 1';
+				 ok
+			sefor 2: mostre 'n vale 2';
+				 ok
+			sefor 3: mostre 'n vale 3';
+				 ok
+			casocontrario: mostre 'n nao vale nem 1, nem 2 e nem 3!';
+		}
+
+		g[0] vale 7.0;
+		g[1] vale 8.0;
+		g[2] vale 9.0;
+
+		g1 vale g[0];
+		g2 vale g[2];
+		g2 vale g2 + g1;
+		mostre g2;		
+
+	}
+}

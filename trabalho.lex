@@ -99,6 +99,9 @@ CTE_NUMEROGRANDECOMPONTO {REAL}
 
 {VALE}		{ trata_folha(); return _VALE; }
 
+"!="		{ trata_folha(); yylval.v = "!="; return _DIFERENTE; }
+"<="		{ trata_folha(); yylval.v = "<="; return _MENOROUIGUAL; }
+">="		{ trata_folha(); yylval.v = ">="; return _MAIOROUIGUAL; }
 "=" 		{ trata_folha(); yylval.v = "=="; return '='; }
 {OU}		{ trata_folha(); yylval.v = "||"; return _OU; }
 {E}			{ trata_folha(); yylval.v = "&&"; return _E; }

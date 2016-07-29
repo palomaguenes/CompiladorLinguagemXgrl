@@ -14,6 +14,7 @@ struct Tipo {
   string decl;  // declaração correspondente em c-assembly
   string fmt;   // formato para "printf"
   int dim;
+  vector<int> dimm;
 };
 
 Tipo Integer =	{ "numerosemponto", "int", "d" };
@@ -28,6 +29,7 @@ struct Atributo {
   string v, c;
   Tipo t;
   vector<string> lst;
+  vector<int> dims;
 }; 
 
 #define YYSTYPE Atributo
@@ -138,28 +140,36 @@ string trata_dimensoes_decl_var( Tipo t ) {
 void declara_variavel( Atributo& ss, 
                        vector<string> lst, 
                        Tipo tipo,
-					   string dimensaov) {
+					   Atributo& s4) {
   ss.c = "";
+  string dimensao = "";
 
-  string dimensao;
+  
   for( int i = 0; i < lst.size(); i++ ) {
     if( ts[ts.size()-1].find( lst[i] ) != ts[ts.size()-1].end() ) 
       erro( "Variável já declarada: " + lst[i] );
     else {
+		
+		if (tipo.nome == "palavra")
+				dimensao = trata_dimensoes_decl_var( tipo );
+		
+		if (s4.c != "nulo"){
 
-		if (tipo.nome == "palavra"){
-			dimensao = trata_dimensoes_decl_var( tipo );
-		}else{
-			dimensao = dimensaov;
+			if (!s4.dims.empty()){
+				int dim = 1;
+				for (int d = 0; d < s4.dims.size(); d++){
+					tipo.dimm.push_back(s4.dims[d]); 
+					dim *= s4.dims[d];
+				}
+				dimensao = toString(dim);
+			}		
+
+			if (toInt(dimensao) > 0)  dimensao = '[' + dimensao +']';
+			else	dimensao = "";
 		}
-
-		if (toInt(dimensaov) > 0 && toInt(trata_dimensoes_decl_var( tipo )) > 0 )
-			dimensao = toString(toInt(trata_dimensoes_decl_var( tipo )) * toInt(dimensaov));
-
-		if (toInt(dimensao) > 0)  dimensao = '[' + dimensao +']';
-		else	dimensao = "";
-
-		ts[ts.size()-1][ lst[i] ] = tipo; 
+		  
+		ts[ts.size()-1][ lst[i] ] = tipo;
+ 
 		ss.c += tipo.decl + " " + lst[i] +  dimensao + ";\n"; 
     }  
   }
@@ -168,28 +178,56 @@ void declara_variavel( Atributo& ss,
 void declara_variavel( Atributo& ss, string nome, Tipo tipo ) {
   vector<string> lst;
   lst.push_back( nome );
-  declara_variavel( ss, lst, tipo, "");
+  Atributo aux;
+  aux.c = "nulo";
+  declara_variavel( ss, lst, tipo, aux);
+}
+
+
+string cria_indices(const Atributo& s1, string s2){
+
+	if (s2 != ""){
+
+		string indice1, indice2;
+
+		if (s2.find(" ") != string::npos){
+			indice1 = s2.substr(0, s2.find(" "));
+			indice2 = s2.substr(s2.find(" "), s2.length());
+		}
+
+		indice1 = s2;
+
+		if (indice2 == "") indice2 = '0'; 
+
+		int indice = toInt(indice1) * s1.t.dimm[1] + toInt(indice2);
+
+		s2 = '[' + toString(indice) + ']';
+
+	}
+
+	return s2;
+
 }
 	
 
 void gera_codigo_atribuicao( Atributo& ss, 
                              const Atributo& s1,
-							 const Atributo& s2,
-                             const Atributo& s3 ) {
+			                 const Atributo& s2,
+                             const Atributo& s3) {
   
   if( s1.t.nome == s3.t.nome &&  s1.t.nome == "palavra" ) {
     ss.c = s1.c + s3.c + "  " 
-           + "strncpy( " + s1.v + ", " + s3.v + ", " + 
+           + "strncpy( " + s1.v + s2.c + ", " + s3.v + ", " + 
            toString( s3.t.dim ) + " );\n";
   }else if( s1.t.nome == s3.t.nome ){
-    ss.c = s1.c + s3.c + "  " + s1.v + s2.c + " = " + s3.v + ";\n";
+    ss.c = s1.c + s3.c + "  " + s1.v + cria_indices(s1, s2.c)  + " = " + s3.v + ";\n";
   }
 
 }
 
 void gera_codigo_atribuicao_funcao( Atributo& ss, 
                              const Atributo& s1,
-						     const Atributo& s2, 
+			                 const Atributo& s2, 
                              const Atributo& s3 ) {
 
 	vector<Tipo> v = tf[s3.v];
@@ -211,7 +249,7 @@ void gera_codigo_atribuicao_funcao( Atributo& ss,
 		       + "strncpy( " + s1.v + ", " + s3.v + ", " + 
 		       toString( s1.t.dim) + " );\n";
   	}else{
-    	ss.c = "  " + s1.v + s2.c + " =" + s3.c + "\n";
+    		ss.c = "  " + s1.v + s2.c + " =" + s3.c + "\n";
 	}
 }
 
@@ -496,9 +534,33 @@ void checa_tipo_exp(string tipo1, string tipo2){
 		erro("Indices devem ser do tipo numerocomponto");
 }
 
+void cria_var_indice(Atributo& ss, Atributo& s1, string v1, string v2){
+	
+	for (int i = ts.size()-1; i >= 0 ; i--){
+		if( ts[i].find( s1.v ) != ts[i].end() ){
+			s1.t = ts[i][s1.v]; 
+			break;
+		}
+	}
+
+	if ( s1.t.dimm.empty())
+		erro("Índices em variável que não é um vetor/matriz!");
+	
+	if (v2 == ""){
+		s1.v = cria_indices(s1, v1);
+	}
+	else{
+		s1.v = cria_indices(s1, v1 + " " + v2);
+	}
+
+	ss.v += s1.v;
+
+}
+
 %}
 
-%token _ID _TUDAO _USANDOISSO _EXECUTEISSO _SE _EHVERDADE _EHMENTIRA 
+%token _ID _TUDAO _USANDOISSO _EXECUTEISSO _SE _EHVERDADE _EHMENTIRA
+%token _DIFERENTE _MAIOROUIGUAL _MENOROUIGUAL
 %token _MOSTRE _VALE _COM _FACA _ENQUANTO _REPITA _EXECUTE _LE 
 %token _NUMEROSEMPONTO _PALAVRA _NUMEROCOMPONTO _NUMEROGRANDECOMPONTO _SIMBOLO _VOUF
 %token _ESCOLHA _SEFOR _OK _CASOCONTRARIO
@@ -586,15 +648,18 @@ DECLS : DECL ';' DECLS { $$.c = $1.c + $3.c; }
       |	DECL ';'
       ;
      
-DECL : IDS ':' TIPO  TAMANHOARRAY { declara_variavel( $$, $1.lst, $3.t, $4.v ); }     
+DECL : IDS ':' TIPO  TAMANHOARRAY { declara_variavel( $$, $1.lst, $3.t, $4); }     
      ;
 
 TAMANHOARRAY : _CTE_NUMEROSEMPONTO _X  _CTE_NUMEROSEMPONTO
-				{ $$.v = toString(toInt($1.v) * toInt($3.v));}
+				{ $$.dims.push_back(toInt($1.v));
+				  $$.dims.push_back(toInt($3.v)); }
 			 | _CTE_NUMEROSEMPONTO
-				{ $$.v = toString(toInt($1.v)); }
+				{ $$.dims.push_back(toInt($1.v));
+				  $$.dims.push_back(1); }
 			 |	
 				{ $$.v = "";}
+			 ;
 
 IDS : IDS '&' _ID { $$.lst = $1.lst; $$.lst.push_back( $3.v ); }
     | _ID		  { $$.lst.push_back( $1.v ); }
@@ -702,7 +767,7 @@ CMD_ATRIB : IDATR INDICE _VALE E ';'
           ;
 
 CMD_ATRIB_SPV : IDATR INDICE _VALE E
-				{ gera_codigo_atribuicao( $$, $1, $2, $4); }
+			{ gera_codigo_atribuicao( $$, $1, $2, $4); }
 			  ;
 
 IDATR: _ID { busca_tipo_da_variavel( $$, $1 ); }	
@@ -710,10 +775,10 @@ IDATR: _ID { busca_tipo_da_variavel( $$, $1 ); }
           
 INDICE : '[' E ']' '[' E ']'
 		{ checa_tipo_exp($1.t.nome , $2.t.nome); 
-		  $$.c = "[" + toString( toInt($2.v) * toInt($5.v) ) + "]" ;}
+		  $$.c = $2.v + " " +$5.v;}
        | '[' E ']'
 		{ checa_tipo_exp($1.t.nome, Integer.nome); 
-			$$.c = "[" + $2.v + "]";}
+			$$.c = $2.v;}
 	   | 
 		{ $$.c = ""; };
        ;        
@@ -742,9 +807,9 @@ E : E '+' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E '/' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E '>' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   | E '<' E { gera_codigo_operador( $$, $1, $2, $3 ); }
-  | E "<=" E { gera_codigo_operador( $$, $1, $2, $3 ); }
-  | E ">=" E { gera_codigo_operador( $$, $1, $2, $3 ); }
-  | E "!=" E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  | E _MENOROUIGUAL E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  | E _MAIOROUIGUAL E { gera_codigo_operador( $$, $1, $2, $3 ); }
+  | E _DIFERENTE E { gera_codigo_operador( $$, $1, $2, $3 ); }
   |	E _E E   { gera_codigo_operador( $$, $1, $2, $3); }
   | E _OU E  { gera_codigo_operador( $$, $1, $2, $3); }
   | _RESTO '(' E _SOBRE E ')' { gera_codigo_operador( $$, $3, $1, $5 ); }
@@ -752,6 +817,16 @@ E : E '+' E { gera_codigo_operador( $$, $1, $2, $3 ); }
   |	'+' E	{ gera_codigo_operador_unario( $$, $1, $2 );}
   |	'-' E	{ gera_codigo_operador_unario( $$, $1, $2 );}
   | _NAO E	{ gera_codigo_operador_unario( $$, $1, $2 );}
+  | _ID '[' E ']'	
+	{ busca_tipo_da_variavel( $$, $1 );
+	  checa_tipo_exp($3.t.nome, Integer.nome);
+	  cria_var_indice($$, $1, $3.v, ""); 
+	}
+  | _ID '[' E ']''[' E ']' 
+	{ 	busca_tipo_da_variavel( $$, $1 );
+		checa_tipo_exp($3.t.nome, $6.t.nome);
+		cria_var_indice($$, $1, $3.v, $6.v); 
+	}
   | F
   ;
   

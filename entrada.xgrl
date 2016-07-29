@@ -6,7 +6,7 @@ TUDAO{
 		s: numerosemponto;
 		m & n: numerosemponto;
 		k & l: numerocomponto;
-		d : numerograndecomponto 2;
+		d : numerocomponto 2;
 	}
 
 	funcao nomedafuncao1 recebe() retorna (c:numerosemponto){
