@@ -534,7 +534,7 @@ void checa_tipo_exp(string tipo1, string tipo2){
 		erro("Indices devem ser do tipo numerocomponto");
 }
 
-void cria_var_indice(Atributo& ss, Atributo& s1, string v1, string v2){
+void atribui_tipo_var( Atributo& s1){
 	
 	for (int i = ts.size()-1; i >= 0 ; i--){
 		if( ts[i].find( s1.v ) != ts[i].end() ){
@@ -542,6 +542,11 @@ void cria_var_indice(Atributo& ss, Atributo& s1, string v1, string v2){
 			break;
 		}
 	}
+}
+
+void cria_var_indice(Atributo& ss, Atributo& s1, string v1, string v2){
+	
+	atribui_tipo_var(s1);
 
 	if ( s1.t.dimm.empty())
 		erro("Índices em variável que não é um vetor/matriz!");
@@ -555,6 +560,22 @@ void cria_var_indice(Atributo& ss, Atributo& s1, string v1, string v2){
 
 	ss.v += s1.v;
 
+}
+
+void gera_codigo_scanf(Atributo& ss, Atributo& s2){
+
+	ss.c = "  scanf( \"%"+ s2.t.fmt + "\", &"+ s2.v + " );\n";
+
+}
+
+void gera_codigo_le(Atributo& ss, Atributo& s2){
+
+	string endereco = "&";
+	atribui_tipo_var(s2);
+	if (s2.t.nome == "palavra")
+		endereco = " ";
+
+	ss.c = "  scanf( \"%"+ s2.t.fmt + "\"," + endereco + s2.v + " );\n";
 }
 
 %}
@@ -575,7 +596,7 @@ void cria_var_indice(Atributo& ss, Atributo& s1, string v1, string v2){
 %left _OU
 %left _E
 %left _NAO
-%nonassoc '>' '<' '=' ">=" "<=" "!="
+%nonassoc '>' '<' '=' _DIFERENTE _MAIOROUIGUAL _MENOROUIGUAL
 %left _RESTO
 %left '+' '-'
 %left '*' '/'
@@ -757,7 +778,7 @@ MOSTRE: _MOSTRE E ';' { $$.c = "  printf( \"%"+ $2.t.fmt + "\\n\", " + $2.v + " 
       ; 
 
 LE : _LE IDATR ';' 
-	{ $$.c = "  scanf( \"%"+ $2.t.fmt + "\", &"+ $2.v + " );\n"; }
+	{ gera_codigo_le($$, $2); }
    ;
 
 CMD_ATRIB : IDATR INDICE _VALE E ';'
